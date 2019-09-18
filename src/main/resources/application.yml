@@ -1,0 +1,13 @@
+server:
+  port: 8015
+spring:
+  profiles:
+    active: dev
+  application:
+    name: wuxi-online-account
+  
+logging:
+  level:
+    com.weesharing: debug
+    org.springframework: warn 
+  
