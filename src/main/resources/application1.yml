@@ -1,0 +1,14 @@
+server:
+  port: 8016
+  
+spring:
+  profiles:
+    active: dev
+  application:
+    name: aggpay
+
+logging:
+  level:
+    com.weesharing: debug
+    org.springframework: warn 
+  

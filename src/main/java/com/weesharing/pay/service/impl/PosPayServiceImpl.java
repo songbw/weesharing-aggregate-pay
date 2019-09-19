@@ -113,6 +113,8 @@ public class PosPayServiceImpl implements PayService{
 		Consume consume = consumeService.getOne(consumeQuery);
 		if(consume == null) {
 			throw new ServiceException("请核实支付订单号和支付金额再支付或者重新获取支付订单号");
+		}else if(consume.getStatus() != 0){
+			throw new ServiceException("该支付交易已处理过,请重新申请支付订单号");
 		}
 		consume.setPayType(pay.getPayType());
 		consume.setCardNo(pay.getCardNo());
@@ -120,8 +122,9 @@ public class PosPayServiceImpl implements PayService{
 		consume.insertOrUpdate();
 		
 		// 调用联机账户
-		CommonResult<ConsumeResult> commonResult = woaService.consume(new TradeConsumeData(pay));
-		log.debug("请求联机账户支付结果: {}", JSONUtil.wrap(commonResult, false));
+		TradeConsumeData tcd = new TradeConsumeData(pay);
+		CommonResult<ConsumeResult> commonResult = woaService.consume(tcd);
+		log.debug("请求联机账户支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getTradeNo());
 			consume.setTradeDate(commonResult.getData().getTradeDate());
