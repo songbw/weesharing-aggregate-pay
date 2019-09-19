@@ -42,7 +42,7 @@ public class ConsumeResultDTO {
     private String actPayFee;
 
     @ApiModelProperty(value = "交易状态: 1: 成功, 2: 失败, 0: 新创建")
-    private Boolean status;
+    private Integer status;
 
     @ApiModelProperty(value = "交易时间")
     private String tradeDate;

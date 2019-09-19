@@ -19,7 +19,7 @@ CREATE TABLE `wspay_consume` (
   `card_no` varchar(50) NOT NULL COMMENT '联机账户卡号',
   `card_pwd` varchar(50) NOT NULL COMMENT '联机账户密码',
   
-  `status` tinyint(1) NOT NULL default 0 COMMENT '交易状态: 1: 成功, 2: 失败, 0: 新创建',
+  `status` tinyint(3) NOT NULL default 0 COMMENT '交易状态: 1: 成功, 2: 失败, 0: 新创建',
   `trade_date` varchar(20) NOT NULL default '' COMMENT '交易时间',
   
   `create_date` datetime NOT NULL COMMENT '创建时间',
@@ -50,7 +50,7 @@ CREATE TABLE `wspay_refund` (
   `card_no` varchar(50) NOT NULL COMMENT '联机账户卡号',
   `card_pwd` varchar(50) NOT NULL COMMENT '联机账户密码',
   
-  `status` tinyint(1) NOT NULL default 0 COMMENT '退款状态: 1: 成功, 2: 失败, 0: 新创建',
+  `status` tinyint(3) NOT NULL default 0 COMMENT '退款状态: 1: 成功, 2: 失败, 0: 新创建',
   `trade_date` varchar(20) NOT NULL default '' COMMENT '退款时间',
   
   `create_date` datetime NOT NULL COMMENT '创建时间',

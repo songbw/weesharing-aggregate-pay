@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author ZhangPeng
- * @since 2019-09-18
+ * @since 2019-09-19
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -64,7 +64,7 @@ public class Refund extends Model<Refund> {
     private String cardPwd;
 
     @ApiModelProperty(value = "退款状态: 1: 成功, 2: 失败, 0: 新创建")
-    private Boolean status;
+    private Integer status;
 
     @ApiModelProperty(value = "退款时间")
     private String tradeDate;

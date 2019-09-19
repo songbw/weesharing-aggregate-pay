@@ -1,5 +1,7 @@
 package com.weesharing.pay.service;
 
+import java.util.List;
+
 import com.weesharing.pay.dto.ConsumeResultDTO;
 import com.weesharing.pay.dto.PayDTO;
 import com.weesharing.pay.dto.PrePayDTO;
@@ -13,14 +15,14 @@ public interface PayService {
 	
 	public String doPay(PayDTO pay);
 	
-	public ConsumeResultDTO doQuery(String outTradeNo);
+	public List<ConsumeResultDTO> doQuery(String outTradeNo);
 	
 	public String doRefund(RefundDTO refund);
 	
-	public RefundResultDTO doRefundQuery(String outTradeNo);
+	public List<RefundResultDTO> doRefundQuery(String outTradeNo);
 	
-	public void payNotifyHandler();
+	public void payNotifyHandler(String notifyUrl);
 	
-	public void refundNotifyHandler();
+	public void refundNotifyHandler(String notifyUrl);
 
 }

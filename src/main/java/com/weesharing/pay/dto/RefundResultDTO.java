@@ -44,8 +44,8 @@ public class RefundResultDTO {
     @ApiModelProperty(value = "交易实际金额")
     private String refundFee;
 
-    @ApiModelProperty(value = "退款状态: 1: 成功, 2: 失败, 0: 新创建")
-    private Boolean status;
+    @ApiModelProperty(value = "交易状态: 1: 成功, 2: 失败, 0: 新创建")
+    private Integer status;
 
     @ApiModelProperty(value = "退款时间")
     private String tradeDate;

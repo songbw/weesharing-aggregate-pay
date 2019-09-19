@@ -1,5 +1,8 @@
 package com.weesharing.pay.dto;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 import com.weesharing.pay.entity.Consume;
 
 import io.swagger.annotations.ApiModel;
@@ -17,15 +20,6 @@ import lombok.Data;
 @Data
 @ApiModel(value="预支付对象", description="")
 public class PrePayDTO {
-
-    @ApiModelProperty(value = "支付方式")
-    private String payType;
-
-    @ApiModelProperty(value = "付款方")
-    private String payer;
-
-    @ApiModelProperty(value = "收款方")
-    private String payee;
 
     @ApiModelProperty(value = "订单号")
     private String outTradeNo;
@@ -53,9 +47,6 @@ public class PrePayDTO {
     
     public Consume convert() {
     	Consume consume = new Consume();
-    	consume.setPayType(this.getPayType());
-    	consume.setPayee(this.getPayee());
-    	consume.setPayer(this.getPayer());
     	consume.setOutTradeNo(this.getOutTradeNo());
     	consume.setBody(this.getBody());
     	consume.setRemark(this.getRemark());
@@ -63,7 +54,8 @@ public class PrePayDTO {
         consume.setActPayFee(this.getActPayFee());
         consume.setLimitPay(this.getLimitPay());
         consume.setReturnUrl(this.getReturnUrl());       
-        consume.setNotifyUrl(this.getNotifyUrl());   
+        consume.setNotifyUrl(this.getNotifyUrl());  
+        consume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         return consume;
     }
 
