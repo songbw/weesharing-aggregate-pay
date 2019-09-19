@@ -1,6 +1,7 @@
 package com.weesharing.pay.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,9 +41,9 @@ public class PayController {
 	}
 	
 	@GetMapping("/query/pay")
-	public CommonResult<ConsumeResultDTO> queryPay(String outTradeNo){
-		ConsumeResultDTO consumeResult = payService.doQuery(outTradeNo);
-		return CommonResult.success(consumeResult);
+	public CommonResult<List<ConsumeResultDTO>> queryPay(String outTradeNo){
+		List<ConsumeResultDTO> consumeResults = payService.doQuery(outTradeNo);
+		return CommonResult.success(consumeResults);
 	}
 	
 	@PostMapping("/refund")
@@ -52,9 +53,9 @@ public class PayController {
 	}
 	
 	@GetMapping("/query/refund")
-	public CommonResult<RefundResultDTO> refund(String outTradeNo){
-		RefundResultDTO refundResult = payService.doRefundQuery(outTradeNo);
-		return CommonResult.success(refundResult);
+	public CommonResult<List<RefundResultDTO>> refund(String outTradeNo){
+		List<RefundResultDTO> refundResults = payService.doRefundQuery(outTradeNo);
+		return CommonResult.success(refundResults);
 	}
 
 }
