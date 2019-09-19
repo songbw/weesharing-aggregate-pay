@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.ConsumeResultDTO;
 import com.weesharing.pay.dto.PayDTO;
 import com.weesharing.pay.dto.PrePayDTO;
@@ -20,12 +21,18 @@ import com.weesharing.pay.dto.RefundResultDTO;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
+import com.weesharing.pay.feign.WOAService;
+import com.weesharing.pay.feign.param.TradeConsumeData;
+import com.weesharing.pay.feign.param.TradeRefundData;
+import com.weesharing.pay.feign.result.ConsumeResult;
+import com.weesharing.pay.feign.result.RefundResult;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IRefundService;
 import com.weesharing.pay.service.PayService;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,6 +44,9 @@ public class PosPayServiceImpl implements PayService{
 	
 	@Autowired
 	private IRefundService refundService;
+	
+	@Autowired
+	private WOAService woaService;
 	
 	@Override
 	public PrePayResultDTO prePay(PrePayDTO prePay) {
@@ -109,19 +119,20 @@ public class PosPayServiceImpl implements PayService{
 		consume.setCardPwd(pay.getCardPwd());
 		consume.insertOrUpdate();
 		
-		if(true) {
-		//调用联机账户
-		String tradeNo = "";// 联机账户接口返回值
-		consume.setTradeNo(tradeNo);
-		consume.setTradeDate("");
-		consume.setStatus(1);
-		}else {
+		// 调用联机账户
+		CommonResult<ConsumeResult> commonResult = woaService.consume(new TradeConsumeData(pay));
+		log.debug("请求联机账户支付结果: {}", JSONUtil.wrap(commonResult, false));
+		if (commonResult.getCode() == 200) {
+			consume.setTradeNo(commonResult.getData().getTradeNo());
+			consume.setTradeDate(commonResult.getData().getTradeDate());
+			consume.setStatus(1);
+		} else {
 			consume.setStatus(2);
 		}
 		consume.insertOrUpdate();
 		
 		//回调
-		payNotifyHandler(consume.getNotifyUrl());
+		payNotifyHandler(consume.getNotifyUrl(), JSONUtil.wrap(new ConsumeResultDTO(consume), false).toString());
 		return consume.getReturnUrl();
 	}
 
@@ -139,8 +150,6 @@ public class PosPayServiceImpl implements PayService{
 
 	@Override
 	public String doRefund(RefundDTO refundDTO) {
-		Date now = new Date();
-		
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.eq("out_trade_no", refundDTO.getSourceOutTradeNo());
 		consumeQuery.eq("order_no", refundDTO.getOrderNo());
@@ -164,20 +173,20 @@ public class PosPayServiceImpl implements PayService{
 		refund.setTradeNo(consume.getTradeNo());
 		refund.insert();
 		
-		
-		if(true) {
-		//调用联机账户
-		String refundNo = "";// 联机账户接口返回值
-		refund.setRefundNo(refundNo);
-		refund.setTradeDate("");
-		refund.setStatus(1);
-		}else {
+		// 调用联机账户
+		CommonResult<RefundResult> commonResult = woaService.refund(new TradeRefundData(refund));
+		log.debug("请求联机账户退款结果: {}", JSONUtil.wrap(commonResult, false));
+		if (commonResult.getCode() == 200) {
+			refund.setRefundNo(commonResult.getData().getRefundNo());
+			refund.setTradeDate(commonResult.getData().getTradeDate());
+			refund.setStatus(1);
+		} else {
 			refund.setStatus(2);
 		}
 		refund.insertOrUpdate();
 		
 		//回调
-		refundNotifyHandler(refund.getNotifyUrl());
+		refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new RefundResultDTO(refund), false).toString());
 		return refund.getReturnUrl();
 	}
 
@@ -194,15 +203,15 @@ public class PosPayServiceImpl implements PayService{
 	}
 
 	@Override
-	public void payNotifyHandler(String notifyUrl) {
+	public void payNotifyHandler(String notifyUrl, String json) {
 		log.debug("支付回调, 准备回调地址:{}", notifyUrl);
-		HttpUtil.post(notifyUrl, "json");
+		HttpUtil.post(notifyUrl, json);
 	}
 
 	@Override
-	public void refundNotifyHandler(String notifyUrl) {
+	public void refundNotifyHandler(String notifyUrl, String json) {
 		log.debug("退款回调, 准备回调地址:{}", notifyUrl);
-		HttpUtil.post(notifyUrl, "json");
+		HttpUtil.post(notifyUrl, json);
 	}
 	
 	private boolean isExpire(LocalDateTime createDate) {

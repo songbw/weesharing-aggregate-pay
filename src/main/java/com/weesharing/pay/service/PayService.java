@@ -21,8 +21,8 @@ public interface PayService {
 	
 	public List<RefundResultDTO> doRefundQuery(String outTradeNo);
 	
-	public void payNotifyHandler(String notifyUrl);
+	public void payNotifyHandler(String notifyUrl, String json);
 	
-	public void refundNotifyHandler(String notifyUrl);
+	public void refundNotifyHandler(String notifyUrl, String json);
 
 }
