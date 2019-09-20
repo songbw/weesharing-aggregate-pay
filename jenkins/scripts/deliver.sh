@@ -4,7 +4,7 @@ set user smartadmin
 set passwd Smartautotech@123
 set host 192.168.200.122
 set port 22
-set src_dir ./weesharing-aggregate-pay/target/
+set src_dir ./target/
 set tag_dir /data/server/weesharing-aggregate-pay/userapps
 set name aggregate-pay-0.0.1.jar
 set tmp_dir /tmp
