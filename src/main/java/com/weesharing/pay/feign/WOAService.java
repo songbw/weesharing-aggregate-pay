@@ -12,7 +12,8 @@ import com.weesharing.pay.feign.param.TradeRefundData;
 import com.weesharing.pay.feign.result.ConsumeResult;
 import com.weesharing.pay.feign.result.RefundResult;
 
-@FeignClient(value = "woa", url = "${feign.client.woa}", fallback = WOAServiceH.class)
+//@FeignClient(value = "woa", url = "${feign.client.woa}", fallback = WOAServiceH.class)
+@FeignClient(value = "woa", fallback = WOAServiceH.class)
 public interface WOAService {
 
     @RequestMapping(value = "/wxpos/consume", method = RequestMethod.POST)
