@@ -70,10 +70,12 @@ public class PosPayServiceImpl implements PayService{
 			log.debug("预支付订单号已支付, 预支付号:{}", success.getOrderNo());
 			throw new ServiceException("该订单已支付");
 		}
-		
-		consumeQuery.eq("status", 0);
-		consumeQuery.orderByDesc("create_date");
-		Consume consume = consumeService.getOne(consumeQuery, false);
+		QueryWrapper<Consume> consumeQuery1 = new QueryWrapper<Consume>();
+		consumeQuery1.eq("out_trade_no", prePay.getOutTradeNo());
+		consumeQuery1.eq("act_pay_fee", prePay.getActPayFee());
+		consumeQuery1.eq("status", 0);
+		consumeQuery1.orderByDesc("create_date");
+		Consume consume = consumeService.getOne(consumeQuery1, false);
 		if(consume != null) {
 			if(isExpire(consume.getCreateDate())) {
 				String orderNo = UUID.randomUUID().toString();
@@ -129,10 +131,12 @@ public class PosPayServiceImpl implements PayService{
 			consume.setTradeNo(commonResult.getData().getTradeNo());
 			consume.setTradeDate(commonResult.getData().getTradeDate());
 			consume.setStatus(1);
-		} else {
+			consume.insertOrUpdate();
+		} else if(commonResult.getCode() == 500) {
 			consume.setStatus(2);
+			consume.insertOrUpdate();
+			throw new ServiceException(commonResult.getMessage());
 		}
-		consume.insertOrUpdate();
 		
 		//回调
 		payNotifyHandler(consume.getNotifyUrl(), JSONUtil.wrap(new ConsumeResultDTO(consume), false).toString());
@@ -155,7 +159,6 @@ public class PosPayServiceImpl implements PayService{
 	public String doRefund(RefundDTO refundDTO) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.eq("out_trade_no", refundDTO.getSourceOutTradeNo());
-		consumeQuery.eq("order_no", refundDTO.getOrderNo());
 		consumeQuery.eq("status", 1);
 		Consume consume = consumeService.getOne(consumeQuery);
 		if(consume == null) {
@@ -165,28 +168,35 @@ public class PosPayServiceImpl implements PayService{
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		refundQuery.eq("out_refund_no", refundDTO.getOutRefundNo());
 		refundQuery.eq("source_out_trade_no", refundDTO.getSourceOutTradeNo());
-		refundQuery.eq("order_no", refundDTO.getOrderNo());
+		refundQuery.eq("order_no", consume.getOrderNo());
 		
 		Refund refund = refundService.getOne(refundQuery);
 		if(refund != null) {
 			throw new ServiceException("该退款已存在, 如果未退款成功,请更换退款单号重试.");
 		}
+		
 		refund = refundDTO.convert();
+		refund.setOrderNo(consume.getOrderNo());
+		refund.setTotalFee(consume.getTotalFee());
 		refund.setCardNo(consume.getCardNo());
+		refund.setCardPwd(consume.getCardPwd());
 		refund.setTradeNo(consume.getTradeNo());
 		refund.insert();
 		
 		// 调用联机账户
-		CommonResult<RefundResult> commonResult = woaService.refund(new TradeRefundData(refund));
-		log.debug("请求联机账户退款结果: {}", JSONUtil.wrap(commonResult, false));
+		TradeRefundData  trd = new TradeRefundData(refund);
+		CommonResult<RefundResult> commonResult = woaService.refund(trd);
+		log.debug("请求联机账户退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundNo());
 			refund.setTradeDate(commonResult.getData().getTradeDate());
 			refund.setStatus(1);
-		} else {
+			refund.insertOrUpdate();
+		} else if (commonResult.getCode() == 500) {
 			refund.setStatus(2);
+			refund.insertOrUpdate();
+			throw new ServiceException(commonResult.getMessage());
 		}
-		refund.insertOrUpdate();
 		
 		//回调
 		refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new RefundResultDTO(refund), false).toString());

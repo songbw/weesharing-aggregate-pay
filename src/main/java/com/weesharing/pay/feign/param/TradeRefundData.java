@@ -13,8 +13,7 @@ public class TradeRefundData {
 	private String money;        //单位: 分
 	
 	public TradeRefundData(Refund refund) {
-		super();
-		this.outOrderSn = refund.getTradeNo();
+		this.outOrderSn = refund.getOrderNo();
 		this.cardNo = refund.getCardNo();
 		this.password = refund.getCardPwd();
 		this.money = refund.getRefundFee();
