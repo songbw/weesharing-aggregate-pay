@@ -144,9 +144,9 @@ public class PosPayServiceImpl implements PayService{
 	}
 
 	@Override
-	public List<ConsumeResultDTO> doQuery(String outTradeNo) {
+	public List<ConsumeResultDTO> doQuery(String orderNo) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
-		consumeQuery.eq("out_trade_no", outTradeNo);
+		consumeQuery.eq("order_no", orderNo);
 		List<Consume> consumes = consumeService.list(consumeQuery);
 		List<ConsumeResultDTO> results = new ArrayList<ConsumeResultDTO>();
 		for(Consume consume : consumes) {
@@ -158,7 +158,7 @@ public class PosPayServiceImpl implements PayService{
 	@Override
 	public String doRefund(RefundDTO refundDTO) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
-		consumeQuery.eq("out_trade_no", refundDTO.getSourceOutTradeNo());
+		consumeQuery.eq("order_no", refundDTO.getOrderNo());
 		consumeQuery.eq("status", 1);
 		Consume consume = consumeService.getOne(consumeQuery);
 		if(consume == null) {
@@ -167,7 +167,6 @@ public class PosPayServiceImpl implements PayService{
 		
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		refundQuery.eq("out_refund_no", refundDTO.getOutRefundNo());
-		refundQuery.eq("source_out_trade_no", refundDTO.getSourceOutTradeNo());
 		refundQuery.eq("order_no", consume.getOrderNo());
 		
 		Refund refund = refundService.getOne(refundQuery);
@@ -176,7 +175,7 @@ public class PosPayServiceImpl implements PayService{
 		}
 		
 		refund = refundDTO.convert();
-		refund.setOrderNo(consume.getOrderNo());
+		refund.setSourceOutTradeNo(consume.getOutTradeNo());
 		refund.setTotalFee(consume.getTotalFee());
 		refund.setCardNo(consume.getCardNo());
 		refund.setCardPwd(consume.getCardPwd());
@@ -204,9 +203,9 @@ public class PosPayServiceImpl implements PayService{
 	}
 
 	@Override
-	public List<RefundResultDTO> doRefundQuery(String outTradeNo) {
+	public List<RefundResultDTO> doRefundQuery(String orderNo) {
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-		refundQuery.eq("source_out_trade_no", outTradeNo);
+		refundQuery.eq("order_no", orderNo);
 		List<Refund> refunds = refundService.list(refundQuery);
 		List<RefundResultDTO> results = new ArrayList<RefundResultDTO>();
 		for(Refund refund: refunds) {

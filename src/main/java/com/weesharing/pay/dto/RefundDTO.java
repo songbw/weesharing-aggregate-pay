@@ -24,8 +24,8 @@ public class RefundDTO {
     @ApiModelProperty(value = "退款号")
     private String outRefundNo;
 
-    @ApiModelProperty(value = "原订单号")
-    private String sourceOutTradeNo;
+    @ApiModelProperty(value = "支付订单号")
+	private String orderNo;
 
     @ApiModelProperty(value = "商户编号")
     private String merchantCode;
@@ -42,7 +42,7 @@ public class RefundDTO {
     public Refund convert() {
     	Refund refund = new Refund();
     	refund.setOutRefundNo(this.getOutRefundNo());    
-    	refund.setSourceOutTradeNo(this.getSourceOutTradeNo());
+    	refund.setOrderNo(this.getOrderNo());
         refund.setMerchantCode(this.getMerchantCode());    
         refund.setRefundFee(this.getRefundFee());       
         refund.setReturnUrl(this.getReturnUrl());       

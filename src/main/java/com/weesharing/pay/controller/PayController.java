@@ -46,8 +46,8 @@ public class PayController {
 	
 	@GetMapping("/query/pay")
 	@ApiOperation(value="查询支付")
-	public CommonResult<List<ConsumeResultDTO>> queryPay(String outTradeNo){
-		List<ConsumeResultDTO> consumeResults = payService.doQuery(outTradeNo);
+	public CommonResult<List<ConsumeResultDTO>> queryPay(String orderNo){
+		List<ConsumeResultDTO> consumeResults = payService.doQuery(orderNo);
 		return CommonResult.success(consumeResults);
 	}
 	
@@ -60,8 +60,8 @@ public class PayController {
 	
 	@GetMapping("/query/refund")
 	@ApiOperation(value="查询退款")
-	public CommonResult<List<RefundResultDTO>> refund(String outTradeNo){
-		List<RefundResultDTO> refundResults = payService.doRefundQuery(outTradeNo);
+	public CommonResult<List<RefundResultDTO>> refund(String orderNo){
+		List<RefundResultDTO> refundResults = payService.doRefundQuery(orderNo);
 		return CommonResult.success(refundResults);
 	}
 
