@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,8 @@ public class PosPayServiceImpl implements PayService{
 	
 	@Autowired
 	private WOAService woaService;
+	
+	private ExecutorService executor = Executors.newCachedThreadPool() ;
 	
 	@Override
 	public PrePayResultDTO prePay(PrePayDTO prePay) {
@@ -216,14 +220,24 @@ public class PosPayServiceImpl implements PayService{
 
 	@Override
 	public void payNotifyHandler(String notifyUrl, String json) {
-		log.debug("支付回调, 准备回调地址:{}", notifyUrl);
-		HttpUtil.post(notifyUrl, json);
+		executor.submit(new Runnable(){
+			@Override
+			public void run() {
+				log.debug("支付回调, 准备回调地址:{}", notifyUrl);
+				HttpUtil.post(notifyUrl, json);
+			}
+		});
 	}
 
 	@Override
 	public void refundNotifyHandler(String notifyUrl, String json) {
-		log.debug("退款回调, 准备回调地址:{}", notifyUrl);
-		HttpUtil.post(notifyUrl, json);
+		executor.submit(new Runnable(){
+			@Override
+			public void run() {
+				log.debug("退款回调, 准备回调地址:{}", notifyUrl);
+				HttpUtil.post(notifyUrl, json);
+			}
+		});
 	}
 	
 	private boolean isExpire(LocalDateTime createDate) {
