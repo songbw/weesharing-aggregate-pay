@@ -3,7 +3,7 @@ package com.weesharing.pay.controller;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,16 +32,16 @@ public class PayController {
 	
 	@PostMapping("/prepay")
 	@ApiOperation(value="申请预支付号")
-	public CommonResult<PrePayResultDTO> prePay(@RequestBody PrePayDTO prePay){
+	public CommonResult<PrePayResultDTO> prePay(@RequestBody @Valid PrePayDTO prePay){
 		PrePayResultDTO payResult = payService.prePay(prePay);
 		return CommonResult.success(payResult);
 	}
 	
 	@PostMapping("/pay")
 	@ApiOperation(value="支付")
-	public void pay(@RequestBody PayDTO pay, HttpServletResponse response) throws IOException{
-		String returnUrl = payService.doPay(pay);
-		response.sendRedirect(returnUrl);
+	public CommonResult<String> pay(@RequestBody  @Valid PayDTO pay) throws IOException{
+		String tradeNo = payService.doPay(pay);
+		return CommonResult.success(tradeNo);
 	}
 	
 	@GetMapping("/query/pay")
@@ -53,9 +53,9 @@ public class PayController {
 	
 	@PostMapping("/refund")
 	@ApiOperation(value="退款")
-	public CommonResult<?> refund(@RequestBody RefundDTO refund){
-		payService.doRefund(refund);
-		return CommonResult.success();
+	public CommonResult<String> refund(@RequestBody  @Valid RefundDTO refund){
+		String refundNo = payService.doRefund(refund);
+		return CommonResult.success(refundNo);
 	}
 	
 	@GetMapping("/query/refund")

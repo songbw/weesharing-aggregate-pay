@@ -3,6 +3,8 @@ package com.weesharing.pay.dto;
 import java.time.ZoneId;
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+
 import com.weesharing.pay.entity.Refund;
 
 import io.swagger.annotations.ApiModel;
@@ -22,15 +24,18 @@ import lombok.Data;
 public class RefundDTO {
 
     @ApiModelProperty(value = "退款号")
+    @NotBlank(message = "退款号不能为空")
     private String outRefundNo;
 
     @ApiModelProperty(value = "支付订单号")
+    @NotBlank(message = "支付订单号不能为空")
 	private String orderNo;
 
     @ApiModelProperty(value = "商户编号")
     private String merchantCode;
 
     @ApiModelProperty(value = "交易实际金额")
+    @NotBlank(message = "交易实际金额不能为空")
     private String refundFee;
 
     @ApiModelProperty(value = "前端返回地址")

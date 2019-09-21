@@ -140,7 +140,7 @@ public class PosPayServiceImpl implements PayService{
 		
 		//回调
 		payNotifyHandler(consume.getNotifyUrl(), JSONUtil.wrap(new ConsumeResultDTO(consume), false).toString());
-		return consume.getReturnUrl();
+		return consume.getTradeNo();
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class PosPayServiceImpl implements PayService{
 		
 		//回调
 		refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new RefundResultDTO(refund), false).toString());
-		return refund.getReturnUrl();
+		return refund.getRefundNo();
 	}
 
 	@Override
