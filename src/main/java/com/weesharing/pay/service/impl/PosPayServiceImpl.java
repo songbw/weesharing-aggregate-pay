@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.weesharing.pay.common.CommonResult;
+import com.weesharing.pay.dto.BackBean;
+import com.weesharing.pay.dto.BackRequest;
 import com.weesharing.pay.dto.ConsumeResultDTO;
 import com.weesharing.pay.dto.PayDTO;
 import com.weesharing.pay.dto.PrePayDTO;
@@ -143,7 +145,7 @@ public class PosPayServiceImpl implements PayService{
 		}
 		
 		//回调
-		payNotifyHandler(consume.getNotifyUrl(), JSONUtil.wrap(new ConsumeResultDTO(consume), false).toString());
+		payNotifyHandler(consume.getNotifyUrl(), JSONUtil.wrap(new BackRequest(new BackBean(consume)), false).toString());
 		return consume.getTradeNo();
 	}
 
