@@ -223,7 +223,7 @@ public class PosPayServiceImpl implements PayService{
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.debug("支付回调, 准备回调地址:{}", notifyUrl);
+				log.debug("支付回调, 准备回调地址:{}, 参数: {}", notifyUrl, json);
 				HttpUtil.post(notifyUrl, json);
 			}
 		});
@@ -234,7 +234,7 @@ public class PosPayServiceImpl implements PayService{
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.debug("退款回调, 准备回调地址:{}", notifyUrl);
+				log.debug("退款回调, 准备回调地址:{}, 参数: {}", notifyUrl, json);
 				HttpUtil.post(notifyUrl, json);
 			}
 		});
