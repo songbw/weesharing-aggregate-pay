@@ -54,8 +54,12 @@ public class PayController {
 	@PostMapping("/refund")
 	@ApiOperation(value="退款")
 	public CommonResult<String> refund(@RequestBody  @Valid RefundDTO refund){
-		String refundNo = payService.doRefund(refund);
-		return CommonResult.success(refundNo);
+		try {
+			String refundNo = payService.doRefund(refund);
+			return CommonResult.success(refundNo);
+		}catch(Exception se) {
+			return CommonResult.failed(se.getMessage());
+		}
 	}
 	
 	@GetMapping("/query/refund")
