@@ -126,7 +126,6 @@ public class PosPayServiceImpl implements PayService{
 		}
 		consume.setPayType(pay.getPayType());
 		consume.setCardNo(pay.getCardNo());
-		consume.setCardPwd(pay.getCardPwd());
 		consume.insertOrUpdate();
 		
 		// 调用联机账户
@@ -184,7 +183,6 @@ public class PosPayServiceImpl implements PayService{
 		refund.setSourceOutTradeNo(consume.getOutTradeNo());
 		refund.setTotalFee(consume.getTotalFee());
 		refund.setCardNo(consume.getCardNo());
-		refund.setCardPwd(consume.getCardPwd());
 		refund.setTradeNo(consume.getTradeNo());
 		refund.insert();
 		
