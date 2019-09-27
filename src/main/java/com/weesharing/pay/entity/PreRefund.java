@@ -23,9 +23,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("wspay_consume")
-@ApiModel(value="Consume对象", description="")
-public class Consume extends Model<Consume> {
+@TableName("wspay_pre_refund")
+@ApiModel(value="PreRefund对象", description="")
+public class PreRefund extends Model<PreRefund> {
 
     private static final long serialVersionUID=1L;
 
@@ -33,53 +33,32 @@ public class Consume extends Model<Consume> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "支付方式")
-    private String payType;
+    @ApiModelProperty(value = "退款号")
+    private String outRefundNo;
 
-    @ApiModelProperty(value = "付款方")
-    private String payer;
-
-    @ApiModelProperty(value = "收款方")
-    private String payee;
+    @ApiModelProperty(value = "原订单号")
+    private String sourceOutTradeNo;
 
     @ApiModelProperty(value = "支付订单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "订单号")
-    private String outTradeNo;
-
-    @ApiModelProperty(value = "订单号")
-    private String tradeNo;
-
-    @ApiModelProperty(value = "商品描述")
-    private String body;
-
-    @ApiModelProperty(value = "用户自定义")
-    private String remark;
+    @ApiModelProperty(value = "商户编号")
+    private String merchantCode;
 
     @ApiModelProperty(value = "交易总金额")
     private String totalFee;
 
     @ApiModelProperty(value = "交易实际金额")
-    private String actPayFee;
+    private String refundFee;
 
-    @ApiModelProperty(value = "卡号")
-    private String cardNo;
-
-    @ApiModelProperty(value = "密码")
-    private String cardPwd;
-
-    @ApiModelProperty(value = "交易状态: 1: 成功, 2: 失败, 0: 新创建, 3: 超时(失败)")
+    @ApiModelProperty(value = "退款状态: 1: 成功, 2: 失败, 0: 新创建")
     private Integer status;
 
-    @ApiModelProperty(value = "交易时间")
+    @ApiModelProperty(value = "退款时间")
     private String tradeDate;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createDate;
-
-    @ApiModelProperty(value = "支付限制")
-    private String limitPay;
 
     @ApiModelProperty(value = "前端返回地址")
     private String returnUrl;

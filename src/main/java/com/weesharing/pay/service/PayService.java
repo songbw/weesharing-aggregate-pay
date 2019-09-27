@@ -2,27 +2,26 @@ package com.weesharing.pay.service;
 
 import java.util.List;
 
-import com.weesharing.pay.dto.ConsumeResultDTO;
-import com.weesharing.pay.dto.PayDTO;
-import com.weesharing.pay.dto.PrePayDTO;
-import com.weesharing.pay.dto.PrePayResultDTO;
-import com.weesharing.pay.dto.RefundDTO;
-import com.weesharing.pay.dto.RefundResultDTO;
+import com.weesharing.pay.dto.AggregateRefund;
+import com.weesharing.pay.dto.AggregatePay;
+import com.weesharing.pay.dto.PrePay;
+import com.weesharing.pay.dto.PrePayResult;
+import com.weesharing.pay.dto.QueryConsumeResult;
+import com.weesharing.pay.dto.QueryRefundResult;
+import com.weesharing.pay.entity.Consume;
 
 public interface PayService {
 	
-	public PrePayResultDTO prePay(PrePayDTO prePay);
+	public PrePayResult prePay(PrePay prePay);
 	
-	public String doPay(PayDTO pay);
+	public String doPay(AggregatePay pay);
 	
-	public List<ConsumeResultDTO> doQuery(String outTradeNo);
+	public List<QueryConsumeResult> doQuery(String outTradeNo);
 	
-	public String doRefund(RefundDTO refund);
+	public String doRefund(AggregateRefund refund);
 	
-	public List<RefundResultDTO> doRefundQuery(String outTradeNo);
-	
-	public void payNotifyHandler(String notifyUrl, String json);
-	
-	public void refundNotifyHandler(String notifyUrl, String json);
+	public List<QueryRefundResult> doRefundQuery(String outTradeNo);
+
+	public void doRefund(Consume balanceConsume);
 
 }

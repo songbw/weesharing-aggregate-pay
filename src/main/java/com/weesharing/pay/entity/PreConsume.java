@@ -23,9 +23,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("wspay_consume")
-@ApiModel(value="Consume对象", description="")
-public class Consume extends Model<Consume> {
+@TableName("wspay_pre_consume")
+@ApiModel(value="PreConsume对象", description="")
+public class PreConsume extends Model<PreConsume> {
 
     private static final long serialVersionUID=1L;
 
@@ -48,7 +48,7 @@ public class Consume extends Model<Consume> {
     @ApiModelProperty(value = "订单号")
     private String outTradeNo;
 
-    @ApiModelProperty(value = "订单号")
+    @ApiModelProperty(value = "联机账户订单号")
     private String tradeNo;
 
     @ApiModelProperty(value = "商品描述")
@@ -63,13 +63,7 @@ public class Consume extends Model<Consume> {
     @ApiModelProperty(value = "交易实际金额")
     private String actPayFee;
 
-    @ApiModelProperty(value = "卡号")
-    private String cardNo;
-
-    @ApiModelProperty(value = "密码")
-    private String cardPwd;
-
-    @ApiModelProperty(value = "交易状态: 1: 成功, 2: 失败, 0: 新创建, 3: 超时(失败)")
+    @ApiModelProperty(value = "交易状态: 1: 成功, 2: 失败, 0: 新创建")
     private Integer status;
 
     @ApiModelProperty(value = "交易时间")

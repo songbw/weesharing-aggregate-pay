@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Data
 @ApiModel(value = "预支付结果对象", description = "")
-public class PrePayResultDTO {
+public class PrePayResult {
 
 	@ApiModelProperty(value = "支付订单号")
 	private String orderNo;
@@ -23,7 +23,7 @@ public class PrePayResultDTO {
 	@ApiModelProperty(value = "订单号")
 	private String outTradeNo;
 
-	public PrePayResultDTO(String orderNo, String outTradeNo) {
+	public PrePayResult(String orderNo, String outTradeNo) {
 		this.orderNo = orderNo;
 		this.outTradeNo = outTradeNo;
 	}

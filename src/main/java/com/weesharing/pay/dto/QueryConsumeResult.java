@@ -18,7 +18,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value="消费记录对象", description="")
-public class ConsumeResultDTO {
+public class QueryConsumeResult {
 	
 	@ApiModelProperty(value = "支付方式")
 	private String payType;
@@ -56,7 +56,7 @@ public class ConsumeResultDTO {
     @ApiModelProperty(value = "支付限制")
     private String limitPay;
 
-	public ConsumeResultDTO(Consume consume) {
+	public QueryConsumeResult(Consume consume) {
 		this.payType    = consume.getPayType();
 		this.orderNo    = consume.getOrderNo();
 		this.outTradeNo = consume.getOutTradeNo();

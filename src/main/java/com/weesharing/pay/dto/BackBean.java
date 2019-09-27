@@ -1,6 +1,6 @@
 package com.weesharing.pay.dto;
 
-import com.weesharing.pay.entity.Consume;
+import com.weesharing.pay.entity.PreConsume;
 
 import lombok.Data;
 
@@ -27,7 +27,7 @@ public class BackBean {
     // 1支付，2充值，3退款，4提现
     private int orderCategory ;
     
-    public BackBean(Consume consume) {
+    public BackBean(PreConsume consume) {
 		this.payType    = consume.getPayType();
 		this.orderNo    = consume.getOrderNo();
 		this.outTradeNo = consume.getOutTradeNo();

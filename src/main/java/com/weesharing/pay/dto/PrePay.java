@@ -5,7 +5,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 
-import com.weesharing.pay.entity.Consume;
+import com.weesharing.pay.entity.PreConsume;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value="预支付对象", description="")
-public class PrePayDTO {
+public class PrePay {
 
     @ApiModelProperty(value = "订单号")
     @NotBlank(message = "订单号不能为空")
@@ -51,18 +51,18 @@ public class PrePayDTO {
     @NotBlank(message = "异步通知地址不能为空")
     private String notifyUrl;
     
-    public Consume convert() {
-    	Consume consume = new Consume();
-    	consume.setOutTradeNo(this.getOutTradeNo());
-    	consume.setBody(this.getBody());
-    	consume.setRemark(this.getRemark());
-        consume.setTotalFee(this.getTotalFee());   
-        consume.setActPayFee(this.getActPayFee());
-        consume.setLimitPay(this.getLimitPay());
-        consume.setReturnUrl(this.getReturnUrl());       
-        consume.setNotifyUrl(this.getNotifyUrl());  
-        consume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        return consume;
+    public PreConsume convert() {
+    	PreConsume preConsume = new PreConsume();
+    	preConsume.setOutTradeNo(this.getOutTradeNo());
+    	preConsume.setBody(this.getBody());
+    	preConsume.setRemark(this.getRemark());
+        preConsume.setTotalFee(this.getTotalFee());   
+        preConsume.setActPayFee(this.getActPayFee());
+        preConsume.setLimitPay(this.getLimitPay());
+        preConsume.setReturnUrl(this.getReturnUrl());       
+        preConsume.setNotifyUrl(this.getNotifyUrl());  
+        preConsume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        return preConsume;
     }
 
 }

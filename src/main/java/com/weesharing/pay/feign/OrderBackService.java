@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.BackRequest;
-import com.weesharing.pay.feign.hystric.WOAServiceH;
+import com.weesharing.pay.feign.hystric.OrderBackServiceH;
 import com.weesharing.pay.feign.result.ConsumeResult;
 
-@FeignClient(value = "sso", fallback = WOAServiceH.class)
-public interface SSOService {
+@FeignClient(value = "sso", fallback = OrderBackServiceH.class)
+public interface OrderBackService {
 
     @RequestMapping(value = "/payment/pingan/back", method = RequestMethod.POST)
     CommonResult<ConsumeResult> pinganPosBack(@RequestBody BackRequest bean);

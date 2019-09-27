@@ -2,7 +2,7 @@ package com.weesharing.pay.dto;
 
 import java.time.LocalDateTime;
 
-import com.weesharing.pay.entity.Refund;
+import com.weesharing.pay.entity.PreRefund;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,9 +18,9 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value="退款记录对象", description="")
-public class RefundResultDTO {
+public class QueryRefundResult {
 
-    @ApiModelProperty(value = "联机账户退款号")
+    @ApiModelProperty(value = "退款号")
     private String outRefundNo;
 
     @ApiModelProperty(value = "原订单号")
@@ -28,12 +28,6 @@ public class RefundResultDTO {
 
     @ApiModelProperty(value = "支付订单号")
     private String orderNo;
-
-    @ApiModelProperty(value = "联机账户订单号")
-    private String tradeNo;
-
-    @ApiModelProperty(value = "联机账户退款号")
-    private String refundNo;
 
     @ApiModelProperty(value = "商户编号")
     private String merchantCode;
@@ -53,12 +47,10 @@ public class RefundResultDTO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createDate;
 
-	public RefundResultDTO(Refund refund) {
+	public QueryRefundResult(PreRefund refund) {
 		this.outRefundNo      = refund.getOutRefundNo();
 		this.sourceOutTradeNo = refund.getSourceOutTradeNo();
 		this.orderNo          = refund.getOrderNo();
-		this.tradeNo          = refund.getTradeNo();
-		this.refundNo         = refund.getRefundNo();
 		this.merchantCode     = refund.getMerchantCode();
 		this.totalFee         = refund.getTotalFee();
 		this.refundFee        = refund.getRefundFee();

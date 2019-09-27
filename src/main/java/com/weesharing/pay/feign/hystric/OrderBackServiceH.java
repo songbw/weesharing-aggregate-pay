@@ -4,11 +4,11 @@ import org.springframework.stereotype.Component;
 
 import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.BackRequest;
-import com.weesharing.pay.feign.SSOService;
+import com.weesharing.pay.feign.OrderBackService;
 import com.weesharing.pay.feign.result.ConsumeResult;
 
 @Component
-public class SSOServiceH implements SSOService {
+public class OrderBackServiceH implements OrderBackService {
 
 	@Override
 	public CommonResult<ConsumeResult> pinganPosBack(BackRequest bean) {

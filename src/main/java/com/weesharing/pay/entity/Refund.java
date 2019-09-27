@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author ZhangPeng
- * @since 2019-09-19
+ * @since 2019-09-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,6 +33,9 @@ public class Refund extends Model<Refund> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "支付方式")
+    private String payType;
+
     @ApiModelProperty(value = "退款号")
     private String outRefundNo;
 
@@ -42,10 +45,10 @@ public class Refund extends Model<Refund> {
     @ApiModelProperty(value = "支付订单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "联机账户订单号")
+    @ApiModelProperty(value = "订单号")
     private String tradeNo;
 
-    @ApiModelProperty(value = "联机账户退款号")
+    @ApiModelProperty(value = "退款号")
     private String refundNo;
 
     @ApiModelProperty(value = "商户编号")
@@ -57,13 +60,13 @@ public class Refund extends Model<Refund> {
     @ApiModelProperty(value = "交易实际金额")
     private String refundFee;
 
-    @ApiModelProperty(value = "联机账户卡号")
+    @ApiModelProperty(value = "卡号")
     private String cardNo;
 
-    @ApiModelProperty(value = "联机账户密码")
+    @ApiModelProperty(value = "密码")
     private String cardPwd;
 
-    @ApiModelProperty(value = "退款状态: 1: 成功, 2: 失败, 0: 新创建")
+    @ApiModelProperty(value = "退款状态: 1: 成功, 2: 失败, 0: 新创建, 3:超时(成功)")
     private Integer status;
 
     @ApiModelProperty(value = "退款时间")

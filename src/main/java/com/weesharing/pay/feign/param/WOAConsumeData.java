@@ -1,11 +1,11 @@
 package com.weesharing.pay.feign.param;
 
-import com.weesharing.pay.dto.PayDTO;
+import com.weesharing.pay.dto.pay.WOAPay;
 
 import lombok.Data;
 
 @Data
-public class TradeConsumeData {
+public class WOAConsumeData {
 
 	private String outOrderSn;
 	private String cardNo;
@@ -14,10 +14,10 @@ public class TradeConsumeData {
 	private String returnUrl;
 	private String notifyUrl;
 	
-	public TradeConsumeData(PayDTO pay) {
+	public WOAConsumeData(WOAPay pay) {
 		this.outOrderSn = pay.getOrderNo();
 		this.cardNo = pay.getCardNo();
 		this.password = pay.getCardPwd();
-		this.money = pay.getActPayFree();
+		this.money = pay.getActPayFee();
 	}
 }
