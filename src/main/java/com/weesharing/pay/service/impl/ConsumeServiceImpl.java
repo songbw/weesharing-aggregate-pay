@@ -2,15 +2,18 @@ package com.weesharing.pay.service.impl;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.entity.Consume;
+import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.mapper.ConsumeMapper;
 import com.weesharing.pay.service.IConsumeService;
+import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.WSPayService;
 
 import cn.hutool.core.date.DateUtil;
@@ -26,6 +29,8 @@ import cn.hutool.core.date.DateUtil;
 @Service
 public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> implements IConsumeService {
 
+	@Autowired
+	private IPreConsumeService preConsumeService;
 	private WSPayService wsPayService;
 	
 	/**
@@ -39,13 +44,13 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 	public void doPay(Consume consume) {
 	
 		Date now = new Date();
-		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
+		QueryWrapper<PreConsume> consumeQuery = new QueryWrapper<PreConsume>();
 		consumeQuery.eq("order_no", consume.getOrderNo());
 		consumeQuery.eq("pay_type", consume.getPayType());
 		consumeQuery.eq("act_pay_fee", consume.getActPayFee());
 		consumeQuery.between("create_date", DateUtil.offsetMinute(now, -30) , now);
 		
-		Consume one = getOne(consumeQuery);
+		PreConsume one = preConsumeService.getOne(consumeQuery);
 		if(one == null) {
 			throw new ServiceException("请核实支付订单号和支付金额再支付或者重新获取支付订单号");
 		}else if(one.getStatus() != 0){

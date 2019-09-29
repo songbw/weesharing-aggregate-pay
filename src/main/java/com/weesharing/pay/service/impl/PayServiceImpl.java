@@ -132,7 +132,7 @@ public class PayServiceImpl implements PayService{
 		if(checkPayFee(preConsume, pay) == 1) {
 			//金额正确进行异步支付
 			asyncPay(preConsume, pay, true);
-		}if(checkPayFee(preConsume, pay) == 0) {
+		}else if(checkPayFee(preConsume, pay) == 0) {
 			//金额正确进行0元异步支付
 			asyncPay(preConsume, pay, false);
 		}else {
