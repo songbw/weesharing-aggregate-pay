@@ -19,5 +19,4 @@ public class WOARefundData {
 		this.money = refund.getRefundFee();
 	}
 	
-	
 }

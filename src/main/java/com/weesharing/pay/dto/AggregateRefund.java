@@ -9,7 +9,9 @@ import javax.validation.constraints.NotBlank;
 import com.weesharing.pay.dto.pay.BalancePay;
 import com.weesharing.pay.dto.pay.WOAPay;
 import com.weesharing.pay.dto.pay.WOCPay;
+import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.PreRefund;
+import com.weesharing.pay.entity.Refund;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -83,5 +85,24 @@ public class AggregateRefund {
         refund.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         return refund;
     }
+    
+    public Refund conver(PreRefund preRefund, Consume consume) {
+		Refund refund = new Refund();
+		refund.setOutRefundNo(preRefund.getOutRefundNo());
+		refund.setMerchantCode(preRefund.getMerchantCode());
+		refund.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+		refund.setReturnUrl(preRefund.getReturnUrl());
+		refund.setNotifyUrl(preRefund.getNotifyUrl());
+		
+		refund.setPayType(consume.getPayType());
+		refund.setSourceOutTradeNo(consume.getOutTradeNo());
+		refund.setOrderNo(consume.getOrderNo());
+		refund.setTradeNo(consume.getTradeNo());
+		refund.setTotalFee(consume.getTotalFee());
+		refund.setRefundFee(consume.getActPayFee());
+		refund.setCardNo(consume.getCardNo());
+		refund.setCardPwd(consume.getCardPwd());
+		return refund;
+	}
     
 }

@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class Balance {
+public class QueryBalanceData {
 	
     private Integer id;
 

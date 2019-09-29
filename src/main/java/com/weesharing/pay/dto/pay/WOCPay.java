@@ -2,6 +2,8 @@ package com.weesharing.pay.dto.pay;
 
 import javax.validation.constraints.NotBlank;
 
+import com.weesharing.pay.entity.Consume;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -30,5 +32,16 @@ public class WOCPay {
 	@ApiModelProperty(value = "惠民优选卡密码")
 	@NotBlank(message = "手机号不能为空")
 	private String mobile;
+	
+	public Consume convert() {
+		Consume consume  = new Consume();
+		consume.setPayType(this.payType);
+		consume.setOrderNo(this.orderNo);
+		consume.setActPayFee(this.actPayFee);
+		consume.setCardNo(this.cardNo);
+		consume.setCardPwd(this.cardPwd);
+		consume.setPayer(this.mobile);
+		return consume;
+	}
 
 }

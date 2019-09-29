@@ -2,13 +2,12 @@ package com.weesharing.pay.service;
 
 import java.util.List;
 
-import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.AggregatePay;
+import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
-import com.weesharing.pay.entity.Consume;
 
 public interface PayService {
 	
@@ -21,7 +20,5 @@ public interface PayService {
 	public String doRefund(AggregateRefund refund);
 	
 	public List<QueryRefundResult> doRefundQuery(String outTradeNo);
-
-	public void doRefund(Consume balanceConsume);
 
 }

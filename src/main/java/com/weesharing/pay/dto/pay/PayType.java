@@ -1,4 +1,4 @@
-package com.weesharing.pay.service.impl;
+package com.weesharing.pay.dto.pay;
 
 
 public enum PayType {

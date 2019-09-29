@@ -21,16 +21,17 @@ import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
-import com.weesharing.pay.dto.pay.BalancePay;
-import com.weesharing.pay.dto.pay.WOAPay;
+import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.dto.pay.WOCPay;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.entity.PreRefund;
+import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.IPreRefundService;
+import com.weesharing.pay.service.IRefundService;
 import com.weesharing.pay.service.PayService;
 
 import cn.hutool.core.date.DateUtil;
@@ -46,19 +47,13 @@ public class PayServiceImpl implements PayService{
 	private IConsumeService consumeService;
 	
 	@Autowired
+	private IRefundService refundService;
+	
+	@Autowired
 	private IPreConsumeService preConsumeService;
 	
 	@Autowired
 	private IPreRefundService preRefundService;
-	
-	@Autowired
-	private PayService woaPayService;
-	
-	@Autowired
-	private PayService wocPayService;
-	
-	@Autowired
-	private PayService balancePayService;
 	
 	private ExecutorService executor = Executors.newCachedThreadPool() ;
 	
@@ -153,7 +148,29 @@ public class PayServiceImpl implements PayService{
 	 * @return 1: 一致, 0: 一致,但是0元支付, 2: 不一致
 	 */
 	private int checkPayFee(PreConsume preConsume, AggregatePay pay) {
-		return 2;
+		
+		Integer preActPayFee = Integer.parseInt(preConsume.getActPayFee());
+		if(preActPayFee == 0) {
+			return 0;
+		}else {
+			if(pay.getBalancePay() != null) {
+				preActPayFee  = preActPayFee - Integer.parseInt(pay.getBalancePay().getActPayFee());
+			}
+			if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
+				for(WOCPay wocPay : pay.getWocPays()){
+					preActPayFee  = preActPayFee - Integer.parseInt(wocPay.getActPayFee());
+				};
+			}
+			if(pay.getWoaPay() != null) {
+				preActPayFee  = preActPayFee - Integer.parseInt(pay.getWoaPay().getActPayFee());
+			}
+			
+			if(preActPayFee == 0) {
+				return 1;
+			}else {
+				return 2;
+			}
+		}
 	}
 	
 	
@@ -166,52 +183,31 @@ public class PayServiceImpl implements PayService{
 				
 				if(zeroPay) {
 					
-					//余额支付
-					BalancePay balancePay = pay.getBalancePay();
-					if(balancePay != null) {
-						try {
-							balancePayService.doPay(pay);
-						}catch(Exception e) {
-							log.error("余额支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getBalancePay(), false).toString());
-							throw new ServiceException("余额支付失败:" + e.getMessage()) ;
+					try {
+						if(pay.getBalancePay() != null) {
+							consumeService.doPay(pay.getBalancePay().convert());
 						}
-					}
-					
-					//惠民优选卡支付
-					List<WOCPay> wocPays = pay.getWocPays();
-					if(wocPays!=null && wocPays.size() >0) {
-						try {
-							wocPayService.doPay(pay);
-						}catch(Exception e) {
-							log.error("惠民优选卡支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWocPays(), false).toString());
-							throw new ServiceException("惠民优选卡支付失败:" + e.getMessage()) ;
-						}finally{
-							if(balancePay != null) {
-								log.info("[惠民优选卡支付失败] *** 开始回退余额支付的金额 *** ");
-								balancePayService.doRefund(new AggregateRefund(balancePay));
-							}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+						if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
+							pay.getWocPays().stream().forEach(wocPay -> {
+									consumeService.doPay(wocPay.convert());
+							});
 						}
-					}
-					
-					//联机账户支付
-					WOAPay woaPay = pay.getWoaPay();
-					if(woaPay != null) {
-						try {
-							woaPayService.doPay(pay);
-						}catch(Exception e) {
-							log.error("联机账户支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
-							throw new ServiceException("联机账户支付失败:" + e.getMessage()) ;
-						}finally{
-							if(balancePay != null) {
-								log.info("[联机账户支付失败] *** 开始回退余额支付的金额 *** ");
-								balancePayService.doRefund(new AggregateRefund(balancePay));
-							}
-							if(wocPays!=null && wocPays.size() >0) {
-								log.info("[联机账户支付失败] *** 开始回退惠民优选卡支付的金额 *** ");
-								wocPays.stream().forEach(wocPay -> {
-									wocPayService.doRefund(new AggregateRefund(wocPay));
-								});
-							}
+						if(pay.getWoaPay() != null) {
+							consumeService.doPay(pay.getWoaPay().convert());
+						}
+					}catch(Exception e) {
+						log.error("联机账户支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
+						throw new ServiceException("联机账户支付失败:" + e.getMessage()) ;
+					}finally{
+						if(pay.getBalancePay() != null) {
+							log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
+							doRefund(new AggregateRefund(pay.getBalancePay()));
+						}
+						if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
+							log.info("[支付失败] *** 开始回退惠民优选卡支付的金额 *** ");
+							pay.getWocPays().stream().forEach(wocPay -> {
+								doRefund(new AggregateRefund(wocPay));
+							});
 						}
 					}
 				}
@@ -280,6 +276,23 @@ public class PayServiceImpl implements PayService{
 		 * 1. 对比退款金额和支付金额
 		 * 2. 对比退款金额和待退款金额
 		 */
+		if(Integer.parseInt(preConsume.getActPayFee()) == Integer.parseInt(refund.getRefundFee())){
+			return true;
+		}
+		
+		int unRefund =  0;
+		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
+		refundQuery.eq("order_no", refund.getOrderNo());
+		refundQuery.eq("status", 1);
+		List<Refund> refunds = refundService.list(refundQuery);
+		for(Refund one : refunds) {
+			unRefund =  unRefund + Integer.parseInt(one.getRefundFee());
+		}
+		
+		if(unRefund >= Integer.parseInt(refund.getRefundFee())){
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -308,16 +321,16 @@ public class PayServiceImpl implements PayService{
 	 * @param refundTotal
 	 * @return
 	 */
-	private int autoAllocationRefund(PreRefund preRefund, AggregateRefund refund) {
+	private int autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
 		int refundStatus = 0;
 		
-		Long refundTotal = Long.parseLong(refund.getRefundFee());
+		Long refundTotal = Long.parseLong(aggregateRefund.getRefundFee());
 		log.info("总退款金额: {}", refundTotal);
 		
 		if (refundTotal > 0) {
-			for (Consume r : autoAllocationRefundHandler(preRefund, refund, refundTotal)) {
+			for (Consume refund : autoAllocationRefundHandler(preRefund, aggregateRefund, refundTotal)) {
 				try {
-					autoRefund(r);
+					refundService.doRefund(aggregateRefund.conver(preRefund, refund));
 				} catch (Exception e) {
 					refundStatus = 2;
 				}
@@ -375,22 +388,6 @@ public class PayServiceImpl implements PayService{
 		return refunds;
 	}
 	
-	/**
-	 * 自动选择退款方式
-	 * @param consume
-	 * @param payType
-	 */
-	private void autoRefund(Consume consume){
-		if(consume.getPayType().equals(PayType.BALANCE.getName())){  
-			balancePayService.doRefund(consume);
-		}
-		if(consume.getPayType().equals(PayType.CARD.getName())){  
-			wocPayService.doRefund(consume);
-		}
-		if(consume.getPayType().equals(PayType.WOA.getName())){  
-			woaPayService.doRefund(consume);
-		}
-	}
 
 	@Override
 	public List<QueryRefundResult> doRefundQuery(String orderNo) {
@@ -424,7 +421,7 @@ public class PayServiceImpl implements PayService{
 	 * @param notifyUrl
 	 * @param json
 	 */
-	public void refundNotifyHandler(String notifyUrl, String json) {
+	private void refundNotifyHandler(String notifyUrl, String json) {
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
@@ -446,10 +443,4 @@ public class PayServiceImpl implements PayService{
 		}
 		return false;
 	}
-
-	@Override
-	public void doRefund(Consume balanceConsume) {
-		throw new ServiceException("调用错误");
-	}
-
 }

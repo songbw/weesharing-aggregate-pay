@@ -12,5 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2019-09-18
  */
 public interface IRefundService extends IService<Refund> {
+	
+	public void doRefund(Refund refund);
 
 }

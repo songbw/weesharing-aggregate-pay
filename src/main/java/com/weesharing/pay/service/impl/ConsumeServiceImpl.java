@@ -1,10 +1,19 @@
 package com.weesharing.pay.service.impl;
 
+import java.util.Date;
+
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.entity.Consume;
+import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.mapper.ConsumeMapper;
 import com.weesharing.pay.service.IConsumeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
+import com.weesharing.pay.service.WSPayService;
+
+import cn.hutool.core.date.DateUtil;
 
 /**
  * <p>
@@ -16,5 +25,47 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> implements IConsumeService {
+
+	private WSPayService wsPayService;
+	
+	/**
+	 * 	1. 查询支付订单号
+	 *  1. 比对实际支付价格
+	 *  2. 更新支付订单的字段信息
+	 *  3. 调用联机账户
+	 * 
+	 */
+	@Override
+	public void doPay(Consume consume) {
+	
+		Date now = new Date();
+		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
+		consumeQuery.eq("order_no", consume.getOrderNo());
+		consumeQuery.eq("pay_type", consume.getPayType());
+		consumeQuery.eq("act_pay_fee", consume.getActPayFee());
+		consumeQuery.between("create_date", DateUtil.offsetMinute(now, -30) , now);
+		
+		Consume one = getOne(consumeQuery);
+		if(one == null) {
+			throw new ServiceException("请核实支付订单号和支付金额再支付或者重新获取支付订单号");
+		}else if(one.getStatus() != 0){
+			throw new ServiceException("该支付交易已处理过,请重新申请支付订单号");
+		}
+		consume.setPayType(consume.getPayType());
+		consume.insertOrUpdate();
+		
+		
+		if(consume.getPayType().equals(PayType.BALANCE.getName())){  
+			wsPayService = new BalancePayServiceImpl();
+		}
+		if(consume.getPayType().equals(PayType.CARD.getName())){  
+			wsPayService = new WOCPayServiceImpl();
+		}
+		if(consume.getPayType().equals(PayType.WOA.getName())){  
+			wsPayService = new WOAPayServiceImpl();
+		}
+		
+		wsPayService.doPay(consume);
+	}
 
 }

@@ -1,6 +1,6 @@
 package com.weesharing.pay.feign.param;
 
-import com.weesharing.pay.dto.pay.WOAPay;
+import com.weesharing.pay.entity.Consume;
 
 import lombok.Data;
 
@@ -14,7 +14,7 @@ public class WOAConsumeData {
 	private String returnUrl;
 	private String notifyUrl;
 	
-	public WOAConsumeData(WOAPay pay) {
+	public WOAConsumeData(Consume pay) {
 		this.outOrderSn = pay.getOrderNo();
 		this.cardNo = pay.getCardNo();
 		this.password = pay.getCardPwd();
