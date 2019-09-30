@@ -1,6 +1,5 @@
 server:
-  port: 8016
-  
+  port: 8016  
 spring:
   profiles:
     active: dev
@@ -16,7 +15,7 @@ spring:
         max-attempts: 3
         max-interval: 2000
         initial-interval: 2000
-        request-read-timeout: 10000   
+        request-read-timeout: 10000
 eureka:
   instance:
     lease-renewal-interval-in-seconds: 5
@@ -27,10 +26,4 @@ eureka:
   client:
     registry-fetch-interval-seconds: 5
     service-url:
-      defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/  
-
-logging:
-  level:
-    com.weesharing: debug
-    org.springframework: warn 
-  
+      defaultZone: http://peer1:9000/eureka/,http://peer2:9000/eureka/,http://peer3:9000/eureka/
