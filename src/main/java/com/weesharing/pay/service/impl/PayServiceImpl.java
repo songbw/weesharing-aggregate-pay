@@ -183,14 +183,19 @@ public class PayServiceImpl implements PayService{
 				
 				if(zeroPay) {
 					
+					boolean balance = false;
+					boolean card = false;
+					
 					try {
 						if(pay.getBalancePay() != null) {
 							consumeService.doPay(pay.getBalancePay().convert());
+							balance = true;
 						}
 						if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
 							pay.getWocPays().stream().forEach(wocPay -> {
 								consumeService.doPay(wocPay.convert());
 							});
+							card = true;
 						}
 						if(pay.getWoaPay() != null) {
 							consumeService.doPay(pay.getWoaPay().convert());
@@ -202,11 +207,11 @@ public class PayServiceImpl implements PayService{
 						log.error("支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
 						preConsume.setStatus(2);
 						preConsume.insertOrUpdate();
-						if(pay.getBalancePay() != null) {
+						if(balance && (pay.getBalancePay() != null)) {
 							log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
 							doRefund(new AggregateRefund(pay.getBalancePay()));
 						}
-						if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
+						if(card && (pay.getWocPays()!=null && pay.getWocPays().size() >0 ) ) {
 							log.info("[支付失败] *** 开始回退惠民优选卡支付的金额 *** ");
 							pay.getWocPays().stream().forEach(wocPay -> {
 								doRefund(new AggregateRefund(wocPay));
