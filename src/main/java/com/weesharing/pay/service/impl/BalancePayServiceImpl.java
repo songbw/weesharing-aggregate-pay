@@ -1,12 +1,14 @@
 package com.weesharing.pay.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Date;
+
 import org.springframework.stereotype.Service;
 
-import com.weesharing.pay.common.CommonResult;
+import com.weesharing.pay.common.CommonResult2;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
+import com.weesharing.pay.feign.BeanContext;
 import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
@@ -14,6 +16,7 @@ import com.weesharing.pay.feign.result.ConsumeResult;
 import com.weesharing.pay.feign.result.RefundResult;
 import com.weesharing.pay.service.WSPayService;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,26 +24,27 @@ import lombok.extern.slf4j.Slf4j;
 @Service("balancePayService")
 public class BalancePayServiceImpl implements WSPayService{
 	
-	@Autowired
-	private SSOService ssoService;
-	
 	/**
 	 * 调用余额账户
 	 */
 	@Override
 	public void doPay(Consume consume) {
 		BalanceConsumeData tcd = new BalanceConsumeData(consume);
-		CommonResult<ConsumeResult> commonResult = ssoService.consume(tcd);
+		CommonResult2<ConsumeResult> commonResult = null;
+		try {
+			commonResult = BeanContext.getBean(SSOService.class).consume(tcd);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		log.debug("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			consume.setTradeNo(commonResult.getData().getTradeNo());
-			consume.setTradeDate(commonResult.getData().getTradeDate());
+			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			consume.setStatus(1);
 			consume.insertOrUpdate();
 		} else if(commonResult.getCode() == 500) {
 			consume.setStatus(2);
 			consume.insertOrUpdate();
-			throw new ServiceException(commonResult.getMessage());
+			throw new ServiceException(commonResult.getMsg());
 		}
 		
 	}
@@ -51,17 +55,16 @@ public class BalancePayServiceImpl implements WSPayService{
 	@Override
 	public void doRefund(Refund refund) {
 		BalanceRefundData  trd = new BalanceRefundData(refund);
-		CommonResult<RefundResult> commonResult = ssoService.refund(trd);
+		CommonResult2<RefundResult> commonResult = BeanContext.getBean(SSOService.class).refund(trd);
 		log.debug("请求余额退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			refund.setRefundNo(commonResult.getData().getRefundNo());
-			refund.setTradeDate(commonResult.getData().getTradeDate());
+			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() == 500) {
 			refund.setStatus(2);
 			refund.insertOrUpdate();
-			throw new ServiceException(commonResult.getMessage());
+			throw new ServiceException(commonResult.getMsg());
 		}
 	}
 	

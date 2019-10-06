@@ -189,16 +189,17 @@ public class PayServiceImpl implements PayService{
 						}
 						if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
 							pay.getWocPays().stream().forEach(wocPay -> {
-									consumeService.doPay(wocPay.convert());
+								consumeService.doPay(wocPay.convert());
 							});
 						}
 						if(pay.getWoaPay() != null) {
 							consumeService.doPay(pay.getWoaPay().convert());
 						}
+						preConsume.setStatus(1);
+						log.info("聚合支付成功");
 					}catch(Exception e) {
-						log.error("联机账户支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
-						throw new ServiceException("联机账户支付失败:" + e.getMessage()) ;
-					}finally{
+						log.error("支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
+						preConsume.setStatus(2);
 						if(pay.getBalancePay() != null) {
 							log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
 							doRefund(new AggregateRefund(pay.getBalancePay()));
@@ -209,8 +210,14 @@ public class PayServiceImpl implements PayService{
 								doRefund(new AggregateRefund(wocPay));
 							});
 						}
+						throw new ServiceException("支付失败:" + e.getMessage()) ;
 					}
+				}else {
+					preConsume.setStatus(1);
+					log.info("聚合0元支付成功");
 				}
+				preConsume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+				preConsume.insertOrUpdate();
 
 				//回调
 				payNotifyHandler(preConsume.getNotifyUrl(), JSONUtil.wrap(new BackRequest(new BackBean(preConsume)), false).toString());

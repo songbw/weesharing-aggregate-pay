@@ -1,5 +1,6 @@
 package com.weesharing.pay.service.impl;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,8 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		Date now = new Date();
 		QueryWrapper<PreConsume> consumeQuery = new QueryWrapper<PreConsume>();
 		consumeQuery.eq("order_no", consume.getOrderNo());
-		consumeQuery.eq("pay_type", consume.getPayType());
-		consumeQuery.eq("act_pay_fee", consume.getActPayFee());
+//		consumeQuery.eq("pay_type", consume.getPayType());
+//		consumeQuery.eq("act_pay_fee", consume.getActPayFee());
 		consumeQuery.between("create_date", DateUtil.offsetMinute(now, -30) , now);
 		
 		PreConsume one = preConsumeService.getOne(consumeQuery);
@@ -56,7 +57,9 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		}else if(one.getStatus() != 0){
 			throw new ServiceException("该支付交易已处理过,请重新申请支付订单号");
 		}
+		consume.setOutTradeNo(one.getOutTradeNo());
 		consume.setPayType(consume.getPayType());
+		consume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 		consume.insertOrUpdate();
 		
 		
