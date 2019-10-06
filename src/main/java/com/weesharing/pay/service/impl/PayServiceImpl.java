@@ -198,6 +198,7 @@ public class PayServiceImpl implements PayService{
 						preConsume.setStatus(1);
 						log.info("聚合支付成功");
 					}catch(Exception e) {
+						e.printStackTrace();
 						log.error("支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
 						preConsume.setStatus(2);
 						preConsume.insertOrUpdate();
@@ -242,7 +243,7 @@ public class PayServiceImpl implements PayService{
 	public String doRefund(AggregateRefund refund) {
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", refund.getOrderNo());
-		preConsumeQuery.eq("status", 1);
+//		preConsumeQuery.eq("status", 1);
 		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery);
 		if(preConsume == null ) {
 			throw new ServiceException("该退款没有此支付订单交易,请核实后重试.");
@@ -296,7 +297,7 @@ public class PayServiceImpl implements PayService{
 		for(Refund one : refunds) {
 			unRefund =  unRefund + Integer.parseInt(one.getRefundFee());
 		}
-		
+		unRefund =  Integer.parseInt(preConsume.getActPayFee()) - unRefund;
 		if(unRefund >= Integer.parseInt(refund.getRefundFee())){
 			return true;
 		}
@@ -316,6 +317,7 @@ public class PayServiceImpl implements PayService{
 				//设置退款状态
 				preRefund.setStatus(refundStatus);
 				preRefund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+				preRefund.insertOrUpdate();
 				
 				//回调
 				refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new QueryRefundResult(preRefund), false).toString());
@@ -415,10 +417,11 @@ public class PayServiceImpl implements PayService{
 	 * @param json
 	 */
 	private void payNotifyHandler(String notifyUrl, String json) {
+		log.info("支付成功, 准备回调...");
+		log.info("回调地址:{}, 参数: {}", notifyUrl, json);
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.debug("支付回调, 准备回调地址:{}, 参数: {}", notifyUrl, json);
 				HttpUtil.post(notifyUrl, json);
 			}
 		});

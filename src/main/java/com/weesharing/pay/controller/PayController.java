@@ -21,8 +21,11 @@ import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
 import com.weesharing.pay.service.PayService;
 
+import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/wspay")
 public class PayController {
@@ -40,6 +43,7 @@ public class PayController {
 	@PostMapping("/pay")
 	@ApiOperation(value="支付", notes = "余额: balance, 惠民卡: card, 联机账户: woa")
 	public CommonResult<String> pay(@RequestBody @Valid AggregatePay pay) throws IOException{
+		log.info("[支付参数]:{}", JSONUtil.wrap(pay, false).toString());
 		String tradeNo = payService.doPay(pay);
 		return CommonResult.success(tradeNo);
 	}
