@@ -1,12 +1,12 @@
 package com.weesharing.pay.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
+import com.weesharing.pay.feign.BeanContext;
 import com.weesharing.pay.feign.WOAService;
 import com.weesharing.pay.feign.param.WOAConsumeData;
 import com.weesharing.pay.feign.param.WOARefundData;
@@ -21,15 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service("woaPayService")
 public class WOAPayServiceImpl implements WSPayService{
 	
-	@Autowired
-	private WOAService woaService;
-	
 	@Override
 	public void doPay(Consume consume) {
 		
 		// 调用联机账户
 		WOAConsumeData tcd = new WOAConsumeData(consume);
-		CommonResult<ConsumeResult> commonResult = woaService.consume(tcd);
+		CommonResult<ConsumeResult> commonResult = BeanContext.getBean(WOAService.class).consume(tcd);
 		log.debug("请求联机账户支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getTradeNo());
@@ -48,7 +45,7 @@ public class WOAPayServiceImpl implements WSPayService{
 	public void doRefund(Refund refund) {
 		// 调用联机账户
 		WOARefundData  trd = new WOARefundData(refund);
-		CommonResult<RefundResult> commonResult = woaService.refund(trd);
+		CommonResult<RefundResult> commonResult = BeanContext.getBean(WOAService.class).refund(trd);
 		log.debug("请求联机账户退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundNo());

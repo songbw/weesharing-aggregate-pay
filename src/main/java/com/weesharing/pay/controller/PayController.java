@@ -38,7 +38,7 @@ public class PayController {
 	}
 	
 	@PostMapping("/pay")
-	@ApiOperation(value="支付")
+	@ApiOperation(value="支付", notes = "余额: balance, 惠民卡: card, 联机账户: woa")
 	public CommonResult<String> pay(@RequestBody @Valid AggregatePay pay) throws IOException{
 		String tradeNo = payService.doPay(pay);
 		return CommonResult.success(tradeNo);

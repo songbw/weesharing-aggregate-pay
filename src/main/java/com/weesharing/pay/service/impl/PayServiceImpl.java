@@ -87,7 +87,7 @@ public class PayServiceImpl implements PayService{
 		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery1, false);
 		if(preConsume != null) {
 			if(isExpire(preConsume.getCreateDate())) {
-				String orderNo = UUID.randomUUID().toString();
+				String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
 				preConsume  = prePay.convert();
 				preConsume.setOrderNo(orderNo);
 				preConsume.insert();
@@ -97,7 +97,7 @@ public class PayServiceImpl implements PayService{
 			log.debug("预支付订单号已存在, 预支付号: {}", preConsume.getOrderNo());
 			return new PrePayResult(preConsume.getOrderNo(), prePay.getOutTradeNo());
 		}else {
-			String orderNo = UUID.randomUUID().toString();
+			String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
 			preConsume  = prePay.convert();
 			preConsume.setOrderNo(orderNo);
 			preConsume.insert();
@@ -200,6 +200,7 @@ public class PayServiceImpl implements PayService{
 					}catch(Exception e) {
 						log.error("支付失败: {}, 参数: {}", e.getMessage(), JSONUtil.wrap(pay.getWoaPay(), false).toString());
 						preConsume.setStatus(2);
+						preConsume.insertOrUpdate();
 						if(pay.getBalancePay() != null) {
 							log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
 							doRefund(new AggregateRefund(pay.getBalancePay()));

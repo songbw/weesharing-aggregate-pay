@@ -1,5 +1,7 @@
 package com.weesharing.pay.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.weesharing.pay.entity.Consume;
 
@@ -14,5 +16,5 @@ import com.weesharing.pay.entity.Consume;
 public interface IConsumeService extends IService<Consume> {
 	
 	public void doPay(Consume consume);
-
+	
 }
