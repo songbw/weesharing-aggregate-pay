@@ -3,7 +3,6 @@ package com.weesharing.pay.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,7 +15,7 @@ import com.weesharing.pay.feign.WOCService;
 import com.weesharing.pay.feign.param.WOCConsumeData;
 import com.weesharing.pay.feign.param.WOCRefundData;
 import com.weesharing.pay.feign.result.PaymentResult;
-import com.weesharing.pay.feign.result.RefundResult;
+import com.weesharing.pay.feign.result.WOCRefundResult;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.WSPayService;
 
@@ -26,9 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service(value = "wocPayService")
 public class WOCPayServiceImpl implements WSPayService {
-	
-	@Autowired
-	private IConsumeService consumeService;
 	
 	@Override
 	public void doPay(Consume consume) {
@@ -57,16 +53,15 @@ public class WOCPayServiceImpl implements WSPayService {
 		consumeQuery.eq("order_no", refund.getOrderNo());
 		consumeQuery.eq("pay_type", refund.getPayType());
 		consumeQuery.eq("card_no", refund.getCardNo());
-		
-		Consume consume = consumeService.getOne(consumeQuery);
+		Consume consume = BeanContext.getBean(IConsumeService.class).getOne(consumeQuery);
 		
 		// 调用惠民优选卡
-		WOCRefundData  trd = new WOCRefundData(consume, refund);
-		CommonResult<RefundResult> commonResult = BeanContext.getBean(WOCService.class).refund(trd);
+		WOCRefundData trd = new WOCRefundData(consume, refund);
+		CommonResult<WOCRefundResult> commonResult = BeanContext.getBean(WOCService.class).refund(trd);
 		log.debug("请求惠民优选卡退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			refund.setRefundNo(commonResult.getData().getRefundNo());
-			refund.setTradeDate(commonResult.getData().getTradeDate());
+			refund.setRefundNo(commonResult.getData().getRefundtransnum());
+			refund.setTradeDate(commonResult.getData().getTranstime());
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() == 500) {
@@ -74,6 +69,7 @@ public class WOCPayServiceImpl implements WSPayService {
 			refund.insertOrUpdate();
 			throw new ServiceException(commonResult.getMessage());
 		}
+		
 	}
 
 }

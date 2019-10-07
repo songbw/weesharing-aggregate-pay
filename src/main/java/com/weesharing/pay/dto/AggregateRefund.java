@@ -10,6 +10,7 @@ import com.weesharing.pay.dto.pay.BalancePay;
 import com.weesharing.pay.dto.pay.WOAPay;
 import com.weesharing.pay.dto.pay.WOCPay;
 import com.weesharing.pay.entity.Consume;
+import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.entity.PreRefund;
 import com.weesharing.pay.entity.Refund;
 
@@ -47,6 +48,15 @@ public class AggregateRefund {
     
     public AggregateRefund() {}
 
+    public AggregateRefund(PreConsume pay) {
+		this.outRefundNo = UUID.randomUUID().toString();
+		this.orderNo = pay.getOrderNo();
+		this.merchantCode = "";
+		this.refundFee = pay.getActPayFee();
+		this.returnUrl = "";
+		this.notifyUrl = "";
+	}
+    
 	public AggregateRefund(WOAPay woaPay) {
 		this.outRefundNo = UUID.randomUUID().toString();
 		this.orderNo = woaPay.getOrderNo();

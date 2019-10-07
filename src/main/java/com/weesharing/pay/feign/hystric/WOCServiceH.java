@@ -9,7 +9,7 @@ import com.weesharing.pay.feign.WOCService;
 import com.weesharing.pay.feign.param.WOCConsumeData;
 import com.weesharing.pay.feign.param.WOCRefundData;
 import com.weesharing.pay.feign.result.PaymentResult;
-import com.weesharing.pay.feign.result.RefundResult;
+import com.weesharing.pay.feign.result.WOCRefundResult;
 
 @Component
 public class WOCServiceH implements WOCService{
@@ -20,7 +20,7 @@ public class WOCServiceH implements WOCService{
 	}
 
 	@Override
-	public CommonResult<RefundResult> refund(WOCRefundData data) {
+	public CommonResult<WOCRefundResult> refund(WOCRefundData data) {
 		return CommonResult.failed("无锡惠民优选卡退款失败");
 	}
 

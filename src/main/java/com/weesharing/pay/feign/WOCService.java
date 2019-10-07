@@ -12,7 +12,7 @@ import com.weesharing.pay.feign.hystric.WOCServiceH;
 import com.weesharing.pay.feign.param.WOCConsumeData;
 import com.weesharing.pay.feign.param.WOCRefundData;
 import com.weesharing.pay.feign.result.PaymentResult;
-import com.weesharing.pay.feign.result.RefundResult;
+import com.weesharing.pay.feign.result.WOCRefundResult;
 
 @FeignClient(value = "woc", fallback = WOCServiceH.class)
 public interface WOCService {
@@ -21,5 +21,5 @@ public interface WOCService {
     CommonResult<PaymentResult> consume(@RequestBody List<WOCConsumeData> data);
 
     @RequestMapping(value = "/woc/cardrefund/refund", method = RequestMethod.POST)
-    CommonResult<RefundResult> refund(@RequestBody WOCRefundData data);
+    CommonResult<WOCRefundResult> refund(@RequestBody WOCRefundData data);
 }
