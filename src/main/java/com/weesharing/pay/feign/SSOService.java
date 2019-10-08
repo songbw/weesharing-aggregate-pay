@@ -20,7 +20,7 @@ public interface SSOService {
 	CommonResult2<ConsumeResult> consume(@RequestBody BalanceConsumeData data);
 
 	@RequestMapping(value = "/balance/refund", method = RequestMethod.PUT)
-	CommonResult2<BalanceDetail> refund(@RequestBody BalanceRefundData data);
+	CommonResult2<?> refund(@RequestBody BalanceRefundData data);
 
 	@RequestMapping(value = "/payment/pingan/back", method = RequestMethod.POST)
 	CommonResult2<ConsumeResult> pinganPosBack(@RequestBody BackRequest bean);
