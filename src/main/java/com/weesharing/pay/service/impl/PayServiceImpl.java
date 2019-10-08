@@ -264,7 +264,7 @@ public class PayServiceImpl implements PayService{
 		
 		preRefund = refund.convert();
 		preRefund.setSourceOutTradeNo(preConsume.getOutTradeNo());
-		preRefund.setTotalFee(preConsume.getTotalFee());
+		preRefund.setTotalFee(refund.getRefundFee());
 		preRefund.insert();
 		
 		//判断退款金额
