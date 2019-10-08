@@ -325,8 +325,10 @@ public class PayServiceImpl implements PayService{
 				
 				//回调
 				log.info("=====准备回调退款======");
-				refundNotifyHandler(new QueryRefundResult(preRefund));
-//				refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new QueryRefundResult(preRefund), false).toString());
+				QueryRefundResult result  = new QueryRefundResult(preRefund);
+				log.info("准备回调退款, 参数:{}", JSONUtil.wrap(result, false).toString());
+				refundNotifyHandler(result);
+//				refundNotifyHandler(refund.getNotifyUrl(), );
 			}});
 	}
 	
@@ -378,25 +380,34 @@ public class PayServiceImpl implements PayService{
 				consumeQuery.eq("order_no", refund.getOrderNo());
 				consumeQuery.eq("status", 1);
 				List<Consume> consumes = consumeService.list(consumeQuery);
+				Long payTotal = consumes.stream().mapToLong(pay -> Long.parseLong(pay.getActPayFee())).sum();
 				
-				if(consumes != null && consumes.size() > 0) {
-					Long payTotal = consumes.stream().mapToLong(card -> Long.parseLong(card.getActPayFee())).sum();
-					log.info("[退款]{}支付金额: {}", refundType, payTotal);
+				QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
+				refundQuery.eq("pay_type", refundType);
+				refundQuery.eq("order_no", refund.getOrderNo());
+				refundQuery.eq("status", 1);
+				List<Refund> refundeds = refundService.list(refundQuery);
+				Long processTotal = refundeds.stream().mapToLong(refunded -> Long.parseLong(refunded.getRefundFee())).sum();
+				
+				//剩余已支付的款
+				Long remainTotal = payTotal - processTotal;
+				if(consumes != null && consumes.size() > 0 && refundTotal > 0 && remainTotal > 0) {
+					
+					log.info("[退款]{}支付金额: {}", refundType, remainTotal);
 					
 					for(Consume consume : consumes) {
 						if (refundTotal > 0) {
-							if(refundTotal > Long.parseLong(consume.getActPayFee())) {
-								log.info("[退款]退款: {}", consume.getActPayFee());
-								log.info("[退款] *** 开始回退支付的金额 *** ");
-								refunds.add(consume);
-								refundTotal = refundTotal - payTotal;
+							log.info("[退款] *** 开始回退支付的金额 *** ");
+							if(refundTotal >= remainTotal) {
+								consume.setActPayFee(String.valueOf(remainTotal));
+								log.info("[退款] 退款: {}", remainTotal);
+								refundTotal = refundTotal - remainTotal;
 							}else {
-								log.info("[部分退款] 部分退款: {}", refund.getRefundFee());
-								log.info("[退款] *** 开始回退支付的金额 *** ");
 								consume.setActPayFee(refund.getRefundFee());
-								refunds.add(consume);
+								log.info("[退款] 退款: {}", refund.getRefundFee());
 								refundTotal = 0L;
 							}
+							refunds.add(consume);
 						}
 					}
 				}
@@ -451,15 +462,15 @@ public class PayServiceImpl implements PayService{
 	}
 	
 	private void refundNotifyHandler(QueryRefundResult result) {
-		log.debug("进入退款回调函数");
+		log.info("进入退款回调函数");
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.debug("退款回调, 参数: {}", JSONUtil.wrap(result, false).toString());
+				log.info("退款回调, 参数: {}", JSONUtil.wrap(result, false).toString());
 				BeanContext.getBean(WorkOrderService.class).refundNotify(result);
 			}
 		});
-		log.debug("退款回调函数结尾");
+		log.info("退款回调函数结尾");
 	}
 	
 	/**
