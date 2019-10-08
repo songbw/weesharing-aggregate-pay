@@ -12,8 +12,8 @@ import com.weesharing.pay.feign.BeanContext;
 import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
+import com.weesharing.pay.feign.result.BalanceDetail;
 import com.weesharing.pay.feign.result.ConsumeResult;
-import com.weesharing.pay.feign.result.RefundResult;
 import com.weesharing.pay.service.WSPayService;
 
 import cn.hutool.core.date.DateUtil;
@@ -55,7 +55,7 @@ public class BalancePayServiceImpl implements WSPayService{
 	@Override
 	public void doRefund(Refund refund) {
 		BalanceRefundData  trd = new BalanceRefundData(refund);
-		CommonResult2<RefundResult> commonResult = BeanContext.getBean(SSOService.class).refund(trd);
+		CommonResult2<BalanceDetail> commonResult = BeanContext.getBean(SSOService.class).refund(trd);
 		log.info("请求余额退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));

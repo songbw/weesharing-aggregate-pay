@@ -7,8 +7,8 @@ import com.weesharing.pay.dto.BackRequest;
 import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
+import com.weesharing.pay.feign.result.BalanceDetail;
 import com.weesharing.pay.feign.result.ConsumeResult;
-import com.weesharing.pay.feign.result.RefundResult;
 
 @Component
 public class SSOServiceH implements SSOService {
@@ -24,7 +24,7 @@ public class SSOServiceH implements SSOService {
 	}
 
 	@Override
-	public CommonResult2<RefundResult> refund(BalanceRefundData data) {
+	public CommonResult2<BalanceDetail> refund(BalanceRefundData data) {
 		return CommonResult2.failed("余额退款失败");
 	}
 	

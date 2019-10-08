@@ -10,8 +10,8 @@ import com.weesharing.pay.dto.BackRequest;
 import com.weesharing.pay.feign.hystric.SSOServiceH;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
+import com.weesharing.pay.feign.result.BalanceDetail;
 import com.weesharing.pay.feign.result.ConsumeResult;
-import com.weesharing.pay.feign.result.RefundResult;
 
 @FeignClient(value = "sso", fallback = SSOServiceH.class)
 public interface SSOService {
@@ -20,7 +20,7 @@ public interface SSOService {
 	CommonResult2<ConsumeResult> consume(@RequestBody BalanceConsumeData data);
 
 	@RequestMapping(value = "/balance/refund", method = RequestMethod.PUT)
-	CommonResult2<RefundResult> refund(@RequestBody BalanceRefundData data);
+	CommonResult2<BalanceDetail> refund(@RequestBody BalanceRefundData data);
 
 	@RequestMapping(value = "/payment/pingan/back", method = RequestMethod.POST)
 	CommonResult2<ConsumeResult> pinganPosBack(@RequestBody BackRequest bean);
