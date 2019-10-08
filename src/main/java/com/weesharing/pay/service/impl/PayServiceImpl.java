@@ -355,7 +355,7 @@ public class PayServiceImpl implements PayService{
 			}else if(remainTotal > 0 && remainTotal < refundTotal) {
 				preRefund.setStatus(3);
 				preRefund.setRefundFee(String.valueOf(remainTotal));
-			}else if(remainTotal > 0 && remainTotal == refundTotal) {
+			}else {
 				preRefund.setStatus(1);
 				preRefund.setRefundFee(String.valueOf(refundTotal));
 			}
@@ -410,7 +410,7 @@ public class PayServiceImpl implements PayService{
 								refundTotal = refundTotal - remainTotal;
 							}else {
 								consume.setActPayFee(refund.getRefundFee());
-								log.info("[退款] 退款: {}", refund.getRefundFee());
+								log.info("[退款] 退款: {}", refundTotal);
 								refundTotal = 0L;
 							}
 							refunds.add(consume);
