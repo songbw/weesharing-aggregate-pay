@@ -36,7 +36,7 @@ public class BalancePayServiceImpl implements WSPayService{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		log.debug("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
+		log.info("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			consume.setStatus(1);
