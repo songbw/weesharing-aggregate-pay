@@ -68,7 +68,7 @@ public class PayController {
 	
 	@GetMapping("/query/refund")
 	@ApiOperation(value="查询退款")
-	public CommonResult<List<QueryRefundResult>> refund(String orderNo){
+	public CommonResult<List<QueryRefundResult>> refundQuery(String orderNo){
 		List<QueryRefundResult> refundResults = payService.doRefundQuery(orderNo);
 		return CommonResult.success(refundResults);
 	}

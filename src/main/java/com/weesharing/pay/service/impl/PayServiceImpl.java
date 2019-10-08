@@ -28,6 +28,8 @@ import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.entity.PreRefund;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
+import com.weesharing.pay.feign.BeanContext;
+import com.weesharing.pay.feign.WorkOrderService;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.IPreRefundService;
@@ -322,7 +324,8 @@ public class PayServiceImpl implements PayService{
 				preRefund.insertOrUpdate();
 				
 				//回调
-				refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new QueryRefundResult(preRefund), false).toString());
+				refundNotifyHandler(new QueryRefundResult(preRefund));
+//				refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new QueryRefundResult(preRefund), false).toString());
 			}});
 	}
 	
@@ -435,12 +438,23 @@ public class PayServiceImpl implements PayService{
 	 * @param notifyUrl
 	 * @param json
 	 */
+	@SuppressWarnings("unused")
 	private void refundNotifyHandler(String notifyUrl, String json) {
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
 				log.debug("退款回调, 准备回调地址:{}, 参数: {}", notifyUrl, json);
 				HttpUtil.post(notifyUrl, json);
+			}
+		});
+	}
+	
+	private void refundNotifyHandler(QueryRefundResult result) {
+		executor.submit(new Runnable(){
+			@Override
+			public void run() {
+				log.debug("退款回调, 准备回调地址:{}, 参数: {}", JSONUtil.wrap(result, false).toString());
+				BeanContext.getBean(WorkOrderService.class).refundNotify(result);
 			}
 		});
 	}
