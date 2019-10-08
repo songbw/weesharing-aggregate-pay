@@ -359,7 +359,7 @@ public class PayServiceImpl implements PayService{
 				preRefund.setStatus(1);
 				preRefund.setRefundFee(String.valueOf(refundTotal));
 			}
-			preRefund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+			preRefund.setTradeDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			preRefund.insertOrUpdate();
 		}
 		
