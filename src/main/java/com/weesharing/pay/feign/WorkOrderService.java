@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.weesharing.pay.dto.QueryRefundResult;
-import com.weesharing.pay.feign.hystric.WOCServiceH;
+import com.weesharing.pay.feign.hystric.WorkOrderServiceH;
 
-@FeignClient(value = "workorders", fallback = WOCServiceH.class)
+@FeignClient(value = "workorders", fallback = WorkOrderServiceH.class)
 public interface WorkOrderService {
 
     @RequestMapping(value = "/aggpays/notify", method = RequestMethod.POST)

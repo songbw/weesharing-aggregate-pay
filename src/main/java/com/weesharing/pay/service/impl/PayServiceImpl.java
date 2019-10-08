@@ -324,6 +324,7 @@ public class PayServiceImpl implements PayService{
 				preRefund.insertOrUpdate();
 				
 				//回调
+				log.info("=====准备回调退款======");
 				refundNotifyHandler(new QueryRefundResult(preRefund));
 //				refundNotifyHandler(refund.getNotifyUrl(), JSONUtil.wrap(new QueryRefundResult(preRefund), false).toString());
 			}});
@@ -390,7 +391,7 @@ public class PayServiceImpl implements PayService{
 								refunds.add(consume);
 								refundTotal = refundTotal - payTotal;
 							}else {
-								log.info("[部分退款] 部分退款: {}", consume.getActPayFee());
+								log.info("[部分退款] 部分退款: {}", refund.getRefundFee());
 								log.info("[退款] *** 开始回退支付的金额 *** ");
 								consume.setActPayFee(refund.getRefundFee());
 								refunds.add(consume);
@@ -450,13 +451,15 @@ public class PayServiceImpl implements PayService{
 	}
 	
 	private void refundNotifyHandler(QueryRefundResult result) {
+		log.debug("进入退款回调函数");
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.debug("退款回调, 准备回调地址:{}, 参数: {}", JSONUtil.wrap(result, false).toString());
+				log.debug("退款回调, 参数: {}", JSONUtil.wrap(result, false).toString());
 				BeanContext.getBean(WorkOrderService.class).refundNotify(result);
 			}
 		});
+		log.debug("退款回调函数结尾");
 	}
 	
 	/**
