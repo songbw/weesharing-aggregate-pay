@@ -341,11 +341,11 @@ public class PayServiceImpl implements PayService{
 			List<Consume> consumes = autoAllocationRefundHandler(preRefund, aggregateRefund, refundTotal);
 			for (Consume refund : consumes) {
 				try {
-					remainTotal = remainTotal - Long.parseLong(refund.getActPayFee());
+					remainTotal = remainTotal + Long.parseLong(refund.getActPayFee());
 					refundService.doRefund(aggregateRefund.conver(preRefund, refund));
 				} catch (Exception e) {
 					log.info("退款异常:{}", e.getMessage());
-					remainTotal = remainTotal + Long.parseLong(refund.getActPayFee());
+					remainTotal = remainTotal - Long.parseLong(refund.getActPayFee());
 				}
 			}
 			
@@ -357,7 +357,7 @@ public class PayServiceImpl implements PayService{
 				preRefund.setRefundFee(String.valueOf(remainTotal));
 			}else if(remainTotal > 0 && remainTotal == refundTotal) {
 				preRefund.setStatus(1);
-				preRefund.setRefundFee(String.valueOf(remainTotal));
+				preRefund.setRefundFee(String.valueOf(refundTotal));
 			}
 			preRefund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			preRefund.insertOrUpdate();
