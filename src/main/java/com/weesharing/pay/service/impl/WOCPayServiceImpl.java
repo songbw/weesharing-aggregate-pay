@@ -32,7 +32,7 @@ public class WOCPayServiceImpl implements WSPayService {
 		List<WOCConsumeData> tcds = new ArrayList<WOCConsumeData>();
 		tcds.add(new WOCConsumeData(consume));
 		CommonResult<PaymentResult> commonResult = BeanContext.getBean(WOCService.class).consume(tcds);
-		log.debug("请求惠民优选卡支付参数:{}, 结果: {}", JSONUtil.wrap(tcds, false), JSONUtil.wrap(commonResult, false));
+		log.info("请求惠民优选卡支付参数:{}, 结果: {}", JSONUtil.wrap(tcds, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getCardPayResponseBeanList().get(0).getPaymenttransnum());
 			consume.setTradeDate(commonResult.getData().getCardPayResponseBeanList().get(0).getTranstime());
@@ -58,7 +58,7 @@ public class WOCPayServiceImpl implements WSPayService {
 		// 调用惠民优选卡
 		WOCRefundData trd = new WOCRefundData(consume, refund);
 		CommonResult<WOCRefundResult> commonResult = BeanContext.getBean(WOCService.class).refund(trd);
-		log.debug("请求惠民优选卡退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
+		log.info("请求惠民优选卡退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundtransnum());
 			refund.setTradeDate(commonResult.getData().getTranstime());

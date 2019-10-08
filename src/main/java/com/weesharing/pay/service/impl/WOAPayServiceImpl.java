@@ -27,7 +27,7 @@ public class WOAPayServiceImpl implements WSPayService{
 		// 调用联机账户
 		WOAConsumeData tcd = new WOAConsumeData(consume);
 		CommonResult<ConsumeResult> commonResult = BeanContext.getBean(WOAService.class).consume(tcd);
-		log.debug("请求联机账户支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
+		log.info("请求联机账户支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getTradeNo());
 			consume.setTradeDate(commonResult.getData().getTradeDate());
@@ -46,7 +46,7 @@ public class WOAPayServiceImpl implements WSPayService{
 		// 调用联机账户
 		WOARefundData  trd = new WOARefundData(refund);
 		CommonResult<RefundResult> commonResult = BeanContext.getBean(WOAService.class).refund(trd);
-		log.debug("请求联机账户退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
+		log.info("请求联机账户退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundNo());
 			refund.setTradeDate(commonResult.getData().getTradeDate());
