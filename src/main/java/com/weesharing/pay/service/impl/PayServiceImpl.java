@@ -315,20 +315,12 @@ public class PayServiceImpl implements PayService{
 
 			@Override
 			public void run() {
-				
-				int refundStatus = autoAllocationRefund(preRefund, refund);
-				
-				//设置退款状态
-				preRefund.setStatus(refundStatus);
-				preRefund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
-				preRefund.insertOrUpdate();
-				
+				PreRefund refundResult = autoAllocationRefund(preRefund, refund);
 				//回调
 				log.info("=====准备回调退款======");
-				QueryRefundResult result  = new QueryRefundResult(preRefund);
+				QueryRefundResult result  = new QueryRefundResult(refundResult);
 				log.info("准备回调退款, 参数:{}", JSONUtil.wrap(result, false).toString());
 				refundNotifyHandler(result);
-//				refundNotifyHandler(refund.getNotifyUrl(), );
 			}});
 	}
 	
@@ -339,25 +331,39 @@ public class PayServiceImpl implements PayService{
 	 * @param refundTotal
 	 * @return
 	 */
-	private int autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
-		int refundStatus = 0;
-		
+	private PreRefund autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
+		//1: 成功, 2: 失败, 3: 部分失败, 0: 新创建
 		Long refundTotal = Long.parseLong(aggregateRefund.getRefundFee());
 		log.info("总退款金额: {}", refundTotal);
+		Long remainTotal = 0L;
 		
 		if (refundTotal > 0) {
 			List<Consume> consumes = autoAllocationRefundHandler(preRefund, aggregateRefund, refundTotal);
 			for (Consume refund : consumes) {
 				try {
+					remainTotal = remainTotal - Long.parseLong(refund.getActPayFee());
 					refundService.doRefund(aggregateRefund.conver(preRefund, refund));
 				} catch (Exception e) {
-					refundStatus = 2;
+					log.info("退款异常:{}", e.getMessage());
+					remainTotal = remainTotal + Long.parseLong(refund.getActPayFee());
 				}
 			}
-		}else {
-			refundStatus = 2;
+			
+			//设置退款状态
+			if(remainTotal == 0) {
+				preRefund.setStatus(2);
+			}else if(remainTotal > 0 && remainTotal < refundTotal) {
+				preRefund.setStatus(3);
+				preRefund.setRefundFee(String.valueOf(remainTotal));
+			}else if(remainTotal > 0 && remainTotal == refundTotal) {
+				preRefund.setStatus(1);
+				preRefund.setRefundFee(String.valueOf(remainTotal));
+			}
+			preRefund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+			preRefund.insertOrUpdate();
 		}
-		return refundStatus;
+		
+		return preRefund;
 	}
 	
 	/**
