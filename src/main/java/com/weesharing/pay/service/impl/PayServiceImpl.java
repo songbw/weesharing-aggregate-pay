@@ -409,7 +409,7 @@ public class PayServiceImpl implements PayService{
 								log.info("[退款] 退款: {}", remainTotal);
 								refundTotal = refundTotal - remainTotal;
 							}else {
-								consume.setActPayFee(refund.getRefundFee());
+								consume.setActPayFee(String.valueOf(refundTotal));
 								log.info("[退款] 退款: {}", refundTotal);
 								refundTotal = 0L;
 							}
