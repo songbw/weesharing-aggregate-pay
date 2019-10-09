@@ -10,7 +10,6 @@ import com.weesharing.pay.dto.BackRequest;
 import com.weesharing.pay.feign.hystric.SSOServiceH;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
-import com.weesharing.pay.feign.result.BalanceDetail;
 import com.weesharing.pay.feign.result.ConsumeResult;
 
 @FeignClient(value = "sso", fallback = SSOServiceH.class)

@@ -399,20 +399,30 @@ public class PayServiceImpl implements PayService{
 				Long remainTotal = payTotal - processTotal;
 				if(consumes != null && consumes.size() > 0 && refundTotal > 0 && remainTotal > 0) {
 					
-					log.info("[退款]{}支付金额: {}", refundType, remainTotal);
+					log.info("[退款]{}总剩余退款金额: {}", refundType, remainTotal);
 					
 					for(Consume consume : consumes) {
-						if (refundTotal > 0) {
+						//核算某种支付方式的剩余款项
+						Long remain = Long.parseLong(consume.getActPayFee()) ;
+						for( Refund refunded:refundeds) {
+							if(refunded.getCardNo().equals(consume.getCardNo())) {
+								remain = remain - Long.parseLong(refunded.getRefundFee());
+							}
+						}
+						
+						if (refundTotal > 0 && remain > 0) {
 							log.info("[退款] *** 开始回退支付的金额 *** ");
-							if(refundTotal >= remainTotal) {
-								consume.setActPayFee(String.valueOf(remainTotal));
-								log.info("[退款] 退款: {}", remainTotal);
-								refundTotal = refundTotal - remainTotal;
+							
+							if(refundTotal >= remain) {
+								consume.setActPayFee(String.valueOf(remain));
+								log.info("[退款] 退款: {}", remain);
+								refundTotal = refundTotal - remain;
 							}else {
 								consume.setActPayFee(String.valueOf(refundTotal));
 								log.info("[退款] 退款: {}", refundTotal);
 								refundTotal = 0L;
 							}
+							
 							refunds.add(consume);
 						}
 					}
