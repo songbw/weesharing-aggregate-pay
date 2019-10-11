@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.BackBean;
 import com.weesharing.pay.dto.BackRequest;
+import com.weesharing.pay.dto.BankAuthBean;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
@@ -29,12 +31,16 @@ import com.weesharing.pay.entity.PreRefund;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.feign.BeanContext;
+import com.weesharing.pay.feign.FastBankPayService;
 import com.weesharing.pay.feign.WorkOrderService;
+import com.weesharing.pay.feign.param.BankAuthBeanData;
+import com.weesharing.pay.feign.result.BankAuthResult;
+import com.weesharing.pay.service.AggregatePayService;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.IPreRefundService;
 import com.weesharing.pay.service.IRefundService;
-import com.weesharing.pay.service.PayService;
+import com.weesharing.pay.service.RedisService;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
@@ -43,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value = "payService")
-public class PayServiceImpl implements PayService{
+public class AggregatePayServiceImpl implements AggregatePayService{
 	
 	@Autowired
 	private IConsumeService consumeService;
@@ -56,6 +62,12 @@ public class PayServiceImpl implements PayService{
 	
 	@Autowired
 	private IPreRefundService preRefundService;
+	
+	@Autowired
+	private FastBankPayService fastBankPayService;
+	
+	@Autowired
+	private RedisService redisService;
 	
 	private ExecutorService executor = Executors.newCachedThreadPool() ;
 	
@@ -106,6 +118,17 @@ public class PayServiceImpl implements PayService{
 			log.debug("预支付订单号生成完成, 预支付号: {}", orderNo);
 			return new PrePayResult(orderNo, prePay.getOutTradeNo());
 		}
+	}
+	
+	@Override
+	public String fastPayAuth(BankAuthBean auth) {
+		CommonResult<BankAuthResult> result = fastBankPayService.bankAuth(new BankAuthBeanData(auth));
+		log.info("快捷支付鉴权结果:{}", JSONUtil.wrap(result, false));
+		if(result.getCode() == 200) {
+			redisService.set("bean_auth:" + auth.getOrderNo(), JSONUtil.wrap(result.getData(), false).toString());
+			return "快捷支付鉴权成功";
+		}
+		return "快捷支付鉴权失败";
 	}
 
 	@Override
@@ -501,4 +524,6 @@ public class PayServiceImpl implements PayService{
 		}
 		return false;
 	}
+
+	
 }

@@ -15,7 +15,7 @@ import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.mapper.ConsumeMapper;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPreConsumeService;
-import com.weesharing.pay.service.WSPayService;
+import com.weesharing.pay.service.IPayService;
 
 import cn.hutool.core.date.DateUtil;
 
@@ -32,7 +32,7 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 
 	@Autowired
 	private IPreConsumeService preConsumeService;
-	private WSPayService wsPayService;
+	private IPayService wsPayService;
 	
 	/**
 	 * 	1. 查询支付订单号

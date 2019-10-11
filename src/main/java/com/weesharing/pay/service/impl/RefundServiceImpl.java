@@ -7,7 +7,7 @@ import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.mapper.RefundMapper;
 import com.weesharing.pay.service.IRefundService;
-import com.weesharing.pay.service.WSPayService;
+import com.weesharing.pay.service.IPayService;
 
 /**
  * <p>
@@ -20,7 +20,7 @@ import com.weesharing.pay.service.WSPayService;
 @Service
 public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> implements IRefundService {
 
-	private WSPayService wsPayService;
+	private IPayService wsPayService;
 	
 	@Override
 	public void doRefund(Refund refund) {

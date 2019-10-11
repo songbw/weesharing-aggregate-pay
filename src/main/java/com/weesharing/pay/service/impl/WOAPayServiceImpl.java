@@ -12,14 +12,14 @@ import com.weesharing.pay.feign.param.WOAConsumeData;
 import com.weesharing.pay.feign.param.WOARefundData;
 import com.weesharing.pay.feign.result.ConsumeResult;
 import com.weesharing.pay.feign.result.RefundResult;
-import com.weesharing.pay.service.WSPayService;
+import com.weesharing.pay.service.IPayService;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service("woaPayService")
-public class WOAPayServiceImpl implements WSPayService{
+public class WOAPayServiceImpl implements IPayService{
 	
 	@Override
 	public void doPay(Consume consume) {

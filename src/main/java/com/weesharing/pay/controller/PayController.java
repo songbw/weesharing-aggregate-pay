@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
+import com.weesharing.pay.dto.BankAuthBean;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
-import com.weesharing.pay.service.PayService;
+import com.weesharing.pay.service.AggregatePayService;
 
 import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiOperation;
@@ -31,13 +32,21 @@ import lombok.extern.slf4j.Slf4j;
 public class PayController {
 	
 	@Autowired
-	private PayService payService;
+	private AggregatePayService payService;
 	
 	@PostMapping("/prepay")
 	@ApiOperation(value="申请预支付号")
 	public CommonResult<PrePayResult> prePay(@RequestBody @Valid PrePay prePay){
 		PrePayResult payResult = payService.prePay(prePay);
 		return CommonResult.success(payResult);
+	}
+	
+	@PostMapping("/fast/bank/auth")
+	@ApiOperation(value="快捷支付鉴权")
+	public CommonResult<String> fastPayAuth(@RequestBody @Valid BankAuthBean authBean){
+		log.info("[快捷支付鉴权参数]:{}", JSONUtil.wrap(authBean, false).toString());
+		String result = payService.fastPayAuth(authBean);
+		return CommonResult.success(result);
 	}
 	
 	@PostMapping("/pay")

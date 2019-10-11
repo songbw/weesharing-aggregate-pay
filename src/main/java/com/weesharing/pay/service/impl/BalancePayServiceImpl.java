@@ -13,7 +13,7 @@ import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
 import com.weesharing.pay.feign.result.ConsumeResult;
-import com.weesharing.pay.service.WSPayService;
+import com.weesharing.pay.service.IPayService;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service("balancePayService")
-public class BalancePayServiceImpl implements WSPayService{
+public class BalancePayServiceImpl implements IPayService{
 	
 	/**
 	 * 调用余额账户
