@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.mapper.RefundMapper;
-import com.weesharing.pay.service.IRefundService;
 import com.weesharing.pay.service.IPayService;
+import com.weesharing.pay.service.IRefundService;
 
 /**
  * <p>
@@ -35,6 +35,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		}
 		if(refund.getPayType().equals(PayType.WOA.getName())){  
 			wsPayService = new WOAPayServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.BANK.getName())){  
+			wsPayService = new BankPayServiceImpl();
 		}
 		wsPayService.doRefund(refund);
 		

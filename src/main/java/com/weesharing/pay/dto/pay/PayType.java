@@ -3,7 +3,7 @@ package com.weesharing.pay.dto.pay;
 
 public enum PayType {
 	
-	BALANCE("balance"), CARD("card"), WOA("woa");
+	BALANCE("balance"), CARD("card"), WOA("woa"), BANK("bank");
 	
 	private String name;
 	

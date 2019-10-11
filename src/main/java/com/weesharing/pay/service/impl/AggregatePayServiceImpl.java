@@ -125,7 +125,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		CommonResult<BankAuthResult> result = fastBankPayService.bankAuth(new BankAuthBeanData(auth));
 		log.info("快捷支付鉴权结果:{}", JSONUtil.wrap(result, false));
 		if(result.getCode() == 200) {
-			redisService.set("bean_auth:" + auth.getOrderNo(), JSONUtil.wrap(result.getData(), false).toString());
+			redisService.set("bank_auth:" + auth.getOrderNo(), JSONUtil.wrap(result.getData(), false).toString());
 			return "快捷支付鉴权成功";
 		}
 		return "快捷支付鉴权失败";
@@ -220,6 +220,10 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 						if(pay.getWoaPay() != null) {
 							consumeService.doPay(pay.getWoaPay().convert());
 						}
+						
+						if(pay.getBankPay() != null) {
+							consumeService.doPay(pay.getBankPay().convert());
+						}
 						preConsume.setStatus(1);
 						log.info("聚合支付成功");
 					}catch(Exception e) {
@@ -229,16 +233,6 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 						preConsume.insertOrUpdate();
 						log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
 						doRefund(new AggregateRefund(preConsume));
-//						if(balance && (pay.getBalancePay() != null)) {
-//							log.info("[支付失败] *** 开始回退余额支付的金额 *** ");
-//							doRefund(new AggregateRefund(pay.getBalancePay()));
-//						}
-//						if(card && (pay.getWocPays()!=null && pay.getWocPays().size() >0 ) ) {
-//							log.info("[支付失败] *** 开始回退惠民优选卡支付的金额 *** ");
-//							pay.getWocPays().stream().forEach(wocPay -> {
-//								doRefund(new AggregateRefund(wocPay));
-//							});
-//						}
 						throw new ServiceException("支付失败:" + e.getMessage()) ;
 					}
 				}else {
@@ -340,9 +334,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			public void run() {
 				PreRefund refundResult = autoAllocationRefund(preRefund, refund);
 				//回调
-				log.info("=====准备回调退款======");
 				QueryRefundResult result  = new QueryRefundResult(refundResult);
-				log.info("准备回调退款, 参数:{}", JSONUtil.wrap(result, false).toString());
 				refundNotifyHandler(result);
 			}});
 	}
@@ -399,7 +391,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	 */
 	private List<Consume> autoAllocationRefundHandler(PreRefund preRefund, AggregateRefund refund, Long refundTotal) {
 		
-		String refundTypes[] = {PayType.BALANCE.getName(), PayType.CARD.getName(), PayType.WOA.getName()};
+		String refundTypes[] = {PayType.BALANCE.getName(), PayType.CARD.getName(), PayType.WOA.getName(), PayType.BANK.getName()};
 		List<Consume> refunds = new ArrayList<Consume>();
 		
 		for(String refundType: refundTypes) {
@@ -501,7 +493,6 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	}
 	
 	private void refundNotifyHandler(QueryRefundResult result) {
-		log.info("进入退款回调函数");
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
@@ -509,7 +500,6 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 				BeanContext.getBean(WorkOrderService.class).refundNotify(result);
 			}
 		});
-		log.info("退款回调函数结尾");
 	}
 	
 	/**

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 import com.weesharing.pay.dto.pay.BalancePay;
+import com.weesharing.pay.dto.pay.BankPay;
 import com.weesharing.pay.dto.pay.WOAPay;
 import com.weesharing.pay.dto.pay.WOCPay;
 
@@ -26,5 +27,8 @@ public class AggregatePay {
 	
 	//惠民优选卡支付
 	private List<WOCPay> wocPays;
+	
+	//快捷支付
+	private BankPay bankPay;
 
 }

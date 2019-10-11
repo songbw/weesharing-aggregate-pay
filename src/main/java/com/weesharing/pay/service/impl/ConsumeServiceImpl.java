@@ -47,8 +47,6 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		Date now = new Date();
 		QueryWrapper<PreConsume> consumeQuery = new QueryWrapper<PreConsume>();
 		consumeQuery.eq("order_no", consume.getOrderNo());
-//		consumeQuery.eq("pay_type", consume.getPayType());
-//		consumeQuery.eq("act_pay_fee", consume.getActPayFee());
 		consumeQuery.between("create_date", DateUtil.offsetMinute(now, -30) , now);
 		
 		PreConsume one = preConsumeService.getOne(consumeQuery);
@@ -71,6 +69,9 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		}
 		if(consume.getPayType().equals(PayType.WOA.getName())){  
 			wsPayService = new WOAPayServiceImpl();
+		}
+		if(consume.getPayType().equals(PayType.BANK.getName())){  
+			wsPayService = new BankPayServiceImpl();
 		}
 		
 		wsPayService.doPay(consume);
