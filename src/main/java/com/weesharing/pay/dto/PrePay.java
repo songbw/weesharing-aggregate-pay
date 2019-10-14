@@ -23,21 +23,21 @@ import lombok.Data;
 @ApiModel(value="预支付对象", description="")
 public class PrePay {
 
-    @ApiModelProperty(value = "订单号")
+    @ApiModelProperty(value = "订单号", example = "123456")
     @NotBlank(message = "订单号不能为空")
     private String outTradeNo;
 
-    @ApiModelProperty(value = "商品描述")
+    @ApiModelProperty(value = "商品描述", example = "测试订单")
     @NotBlank(message = "商品描述不能为空")
     private String body;
 
     @ApiModelProperty(value = "用户自定义")
     private String remark;
 
-    @ApiModelProperty(value = "交易总金额")
+    @ApiModelProperty(value = "交易总金额", example = "11")
     private String totalFee;
 
-    @ApiModelProperty(value = "交易实际金额")
+    @ApiModelProperty(value = "交易实际金额", example = "11")
     @NotBlank(message = "交易实际金额不能为空")
     private String actPayFee;
 

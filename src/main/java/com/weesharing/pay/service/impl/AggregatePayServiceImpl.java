@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.weesharing.pay.common.CommonResult;
+import com.weesharing.pay.common.CommonResult2;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.BackBean;
@@ -122,7 +122,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	
 	@Override
 	public String fastPayAuth(BankAuthBean auth) {
-		CommonResult<BankAuthResult> result = fastBankPayService.bankAuth(new BankAuthBeanData(auth));
+		CommonResult2<BankAuthResult> result = fastBankPayService.bankAuth(new BankAuthBeanData(auth));
 		log.info("快捷支付鉴权结果:{}", JSONUtil.wrap(result, false));
 		if(result.getCode() == 200) {
 			redisService.set("bank_auth:" + auth.getOrderNo(), JSONUtil.wrap(result.getData(), false).toString());
@@ -190,6 +190,10 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 				preActPayFee  = preActPayFee - Integer.parseInt(pay.getWoaPay().getActPayFee());
 			}
 			
+			if(pay.getBankPay() != null) {
+				preActPayFee  = preActPayFee - Integer.parseInt(pay.getBankPay().getActPayFee());
+			}
+			
 			if(preActPayFee == 0) {
 				return 1;
 			}else {
@@ -222,6 +226,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 						}
 						
 						if(pay.getBankPay() != null) {
+							redisService.set("bank_pay:" + pay.getOrderNo(), JSONUtil.wrap(pay.getBankPay(), false).toString());;
 							consumeService.doPay(pay.getBankPay().convert());
 						}
 						preConsume.setStatus(1);

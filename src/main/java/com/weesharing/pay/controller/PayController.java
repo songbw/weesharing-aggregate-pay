@@ -50,7 +50,7 @@ public class PayController {
 	}
 	
 	@PostMapping("/pay")
-	@ApiOperation(value="支付", notes = "余额: balance, 惠民卡: card, 联机账户: woa")
+	@ApiOperation(value="支付", notes = "余额: balance, 惠民卡: card, 联机账户: woa, 快捷支付: bank")
 	public CommonResult<String> pay(@RequestBody @Valid AggregatePay pay) throws IOException{
 		log.info("[支付参数]:{}", JSONUtil.wrap(pay, false).toString());
 		String tradeNo = payService.doPay(pay);
