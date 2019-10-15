@@ -55,11 +55,11 @@ public class BankPayServiceImpl implements IPayService {
 	public void doRefund(Refund refund) {
 		// 调用快捷支付
 		BankRefundData trd = new BankRefundData(refund);
-		CommonResult2<?> commonResult = BeanContext.getBean(FastBankPayService.class).refund(trd);
+		CommonResult2<String> commonResult = BeanContext.getBean(FastBankPayService.class).refund(trd);
 		log.info("请求快捷支付退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			refund.setRefundNo("");
-			refund.setTradeDate("");
+			refund.setRefundNo(commonResult.getData());
+			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() != 200) {

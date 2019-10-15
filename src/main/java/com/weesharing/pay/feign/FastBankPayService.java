@@ -22,7 +22,7 @@ public interface FastBankPayService {
     @RequestMapping(value = "/ztkx/cardPayment/payment", method = RequestMethod.POST)
 	CommonResult2<BankConsumeResult> consume(BankConsumeData tcd);
 
-    @RequestMapping(value = "/ztkx/cardPayment/refund", method = RequestMethod.POST)
-	CommonResult2<?> refund(BankRefundData trd);
+    @RequestMapping(value = "/ztkx/refund", method = RequestMethod.POST)
+	CommonResult2<String> refund(BankRefundData trd);
     
 }

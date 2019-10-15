@@ -30,7 +30,7 @@ public class FastBankPayServiceH implements FastBankPayService{
 	}
 
 	@Override
-	public CommonResult2<?> refund(BankRefundData trd) {
+	public CommonResult2<String> refund(BankRefundData trd) {
 		log.info("快捷支付退款失败, 参数:{}", JSONUtil.wrap(trd, false) );
 		return CommonResult2.failed("快捷支付退款失败");
 	}
