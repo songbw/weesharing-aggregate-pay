@@ -145,8 +145,8 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", pay.getOrderNo());
-		preConsumeQuery.eq("status", 0);
-		preConsumeQuery.orderByDesc("create_date");
+//		preConsumeQuery.eq("status", 0);
+//		preConsumeQuery.orderByDesc("create_date");
 		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery, false);
 		if(preConsume == null) {
 			throw new ServiceException("请核实支付订单号和支付金额再支付或者重新获取支付订单号");
