@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -142,7 +143,10 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		 *     2: 失败  ==> 发起退款流程
 		 *     3: 失败(超时)  超时情况默认失败 ==> 发起退款流程
 		 */
-		
+		String pay_process = redisService.get("pay_process:" + pay.getOrderNo());
+		if(StringUtils.isNotEmpty(pay_process)) {
+			throw new ServiceException("该支付交易正在处理中, 请稍等.");
+		}
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", pay.getOrderNo());
 //		preConsumeQuery.eq("status", 0);
@@ -153,6 +157,8 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}else if(preConsume.getStatus() != 0){
 			throw new ServiceException("该支付交易已处理过,请重新申请支付订单号");
 		}
+		//设置支付订单为处理中的状态
+		redisService.set("pay_process:" + pay.getOrderNo(), pay.getOrderNo(), 30);
 		//判断总金额支付正确
 		if(checkPayFee(preConsume, pay) == 1) {
 			//金额正确进行异步支付

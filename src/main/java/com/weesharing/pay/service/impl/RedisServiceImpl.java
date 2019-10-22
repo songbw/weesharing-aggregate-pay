@@ -47,5 +47,11 @@ public class RedisServiceImpl implements RedisService {
     public Long decrement(String key, long delta) {
         return stringRedisTemplate.opsForValue().decrement(key,delta);
     }
+
+	@Override
+	public void set(String key, String value, long expire) {
+		stringRedisTemplate.opsForValue().set(key, value, expire, TimeUnit.SECONDS);
+		
+	}
     
 }
