@@ -2,6 +2,7 @@ package com.weesharing.pay.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -61,6 +62,13 @@ public class PayController {
 	@ApiOperation(value="查询支付")
 	public CommonResult<List<QueryConsumeResult>> queryPay(String orderNo){
 		List<QueryConsumeResult> consumeResults = payService.doQuery(orderNo);
+		return CommonResult.success(consumeResults);
+	}
+	
+	@GetMapping("/batch/query/pay")
+	@ApiOperation(value="批量查询支付")
+	public CommonResult<Map<String, List<QueryConsumeResult>>> batchQueryPay(String orderNo){
+		Map<String, List<QueryConsumeResult>> consumeResults = payService.doBatchQuery(orderNo);
 		return CommonResult.success(consumeResults);
 	}
 	

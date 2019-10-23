@@ -1,6 +1,7 @@
 package com.weesharing.pay.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
@@ -16,7 +17,9 @@ public interface AggregatePayService {
 	
 	public String doPay(AggregatePay pay);
 	
-	public List<QueryConsumeResult> doQuery(String outTradeNo);
+	public List<QueryConsumeResult> doQuery(String orderNo);
+	
+	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo);
 	
 	public String doRefund(AggregateRefund refund);
 	

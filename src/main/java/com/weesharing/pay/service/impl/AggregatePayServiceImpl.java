@@ -3,8 +3,11 @@ package com.weesharing.pay.service.impl;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -270,6 +273,26 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}
 		return results;
 	}
+	
+	@Override
+	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo) {
+		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
+		consumeQuery.in("order_no", Arrays.asList(orderNo.split(",")));
+		List<Consume> consumes = consumeService.list(consumeQuery);
+		
+		Map<String, List<QueryConsumeResult>> queryResults = new HashMap<String, List<QueryConsumeResult>>();
+		for(String num : orderNo.split(",")) {
+			List<QueryConsumeResult> results = new ArrayList<QueryConsumeResult>();
+			for(Consume consume : consumes) {
+				if(consume.getOrderNo().equals(num)) {
+					results.add(new QueryConsumeResult(consume));
+				}
+			}
+			queryResults.put(num, results);
+		}
+		
+		return queryResults;
+	}
 
 	@Override
 	public String doRefund(AggregateRefund refund) {
@@ -525,6 +548,5 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}
 		return false;
 	}
-
 	
 }
