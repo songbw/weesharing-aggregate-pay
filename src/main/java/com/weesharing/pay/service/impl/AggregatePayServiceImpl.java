@@ -131,8 +131,9 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		if(result.getCode() == 200) {
 			redisService.set("bank_auth:" + auth.getOrderNo(), JSONUtil.wrap(result.getData(), false).toString());
 			return "快捷支付鉴权成功";
+		}else {
+			throw new ServiceException(result.getMsg());
 		}
-		throw new ServiceException("快捷支付鉴权失败");
 	}
 
 	@Override
