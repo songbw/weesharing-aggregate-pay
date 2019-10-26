@@ -495,7 +495,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			if(refund.getPayType().equals(PayType.BANK.getName()) && StringUtils.isNotEmpty(refund.getRefundNo())) {
 				CommonResult2<String> bankResult = fastBankPayService.refundStatus(refund.getRefundNo());
 				log.info(JSONUtil.wrap(bankResult, false).toString());
-				if(bankResult.getCode() ==  200) {
+				if(bankResult != null) {
 					bankStatusResult = bankResult.getMsg();
 				}
 			}
