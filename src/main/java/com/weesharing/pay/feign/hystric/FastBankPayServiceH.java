@@ -34,5 +34,11 @@ public class FastBankPayServiceH implements FastBankPayService{
 		log.info("快捷支付退款失败, 参数:{}", JSONUtil.wrap(trd, false) );
 		return CommonResult2.failed("快捷支付退款失败");
 	}
+
+	@Override
+	public CommonResult2<String> refundStatus(String tranFlow) {
+		log.info("快捷支付退款查询失败, 参数:{}", JSONUtil.wrap(tranFlow, false) );
+		return CommonResult2.failed("快捷支付退款查询失败");
+	}
 	
 }

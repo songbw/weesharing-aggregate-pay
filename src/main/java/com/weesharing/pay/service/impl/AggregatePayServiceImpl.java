@@ -27,6 +27,7 @@ import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
+import com.weesharing.pay.dto.RefundResult;
 import com.weesharing.pay.dto.pay.PayType;
 import com.weesharing.pay.dto.pay.WOCPay;
 import com.weesharing.pay.entity.Consume;
@@ -369,7 +370,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			public void run() {
 				PreRefund refundResult = autoAllocationRefund(preRefund, refund);
 				//回调
-				QueryRefundResult result  = new QueryRefundResult(refundResult);
+				RefundResult result  = new RefundResult(refundResult);
 				refundNotifyHandler(result);
 			}});
 	}
@@ -485,12 +486,20 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 
 	@Override
 	public List<QueryRefundResult> doRefundQuery(String orderNo) {
-		QueryWrapper<PreRefund> refundQuery = new QueryWrapper<PreRefund>();
-		refundQuery.eq("order_no", orderNo);
-		List<PreRefund> refunds = preRefundService.list(refundQuery);
+		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
+		refundQuery.eq("out_refund_no", orderNo);
+		List<Refund> refunds = refundService.list(refundQuery);
 		List<QueryRefundResult> results = new ArrayList<QueryRefundResult>();
-		for(PreRefund refund: refunds) {
-			results.add(new QueryRefundResult(refund));
+		for(Refund refund: refunds) {
+			String bankStatusResult = "退款查询异常";
+			if(refund.getPayType().equals(PayType.BANK.getName()) && StringUtils.isNotEmpty(refund.getRefundNo())) {
+				CommonResult2<String> bankResult = fastBankPayService.refundStatus(refund.getRefundNo());
+				log.info(JSONUtil.wrap(bankResult, false).toString());
+				if(bankResult.getCode() ==  200) {
+					bankStatusResult = bankResult.getMsg();
+				}
+			}
+			results.add(new QueryRefundResult(refund,  bankStatusResult));
 		}
 		return results;
 	}
@@ -527,7 +536,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		});
 	}
 	
-	private void refundNotifyHandler(QueryRefundResult result) {
+	private void refundNotifyHandler(RefundResult result) {
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
