@@ -50,7 +50,7 @@ public class WOAPayServiceImpl implements IPayService{
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundNo());
 			refund.setTradeDate(commonResult.getData().getTradeDate());
-			refund.setStatus(1);
+			refund.setStatus(commonResult.getData().getStatus());
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() == 500) {
 			refund.setStatus(2);

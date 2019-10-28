@@ -51,7 +51,7 @@ public class RefundResult {
     /**
      * 退款状态
      */
-    private Boolean status;
+    private Integer status;
 
     /**
      * 退款时间
