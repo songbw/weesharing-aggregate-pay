@@ -32,6 +32,9 @@ public class QueryRefundResult {
 
     @ApiModelProperty(value = "支付订单号")
     private String orderNo;
+    
+    @ApiModelProperty(value = "退款号")
+    private String refundNo;
 
     @ApiModelProperty(value = "商户编号")
     private String merchantCode;
@@ -59,6 +62,7 @@ public class QueryRefundResult {
 		this.outRefundNo      = refund.getOutRefundNo();
 		this.sourceOutTradeNo = refund.getSourceOutTradeNo();
 		this.orderNo          = refund.getOrderNo();
+		this.refundNo		  = refund.getRefundNo();
 		this.merchantCode     = refund.getMerchantCode();
 		this.totalFee         = refund.getTotalFee();
 		this.refundFee        = refund.getRefundFee();
