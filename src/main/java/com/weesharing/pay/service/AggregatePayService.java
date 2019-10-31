@@ -19,6 +19,8 @@ public interface AggregatePayService {
 	
 	public List<QueryConsumeResult> doQuery(String orderNo);
 	
+	public Integer doPreQuery(String orderNo);
+	
 	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo);
 	
 	public String doRefund(AggregateRefund refund);

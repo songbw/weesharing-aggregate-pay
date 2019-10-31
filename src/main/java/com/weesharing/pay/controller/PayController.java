@@ -65,6 +65,13 @@ public class PayController {
 		return CommonResult.success(consumeResults);
 	}
 	
+	@GetMapping("/query/prepay")
+	@ApiOperation(value="查询预支付结果状态", notes = "0: 未处理, 1: 成功, 2: 失败, 3: 超时")
+	public CommonResult<Integer> queryPrePay(String orderNo){
+		Integer consumeResult = payService.doPreQuery(orderNo);
+		return CommonResult.success(consumeResult);
+	}
+	
 	@GetMapping("/batch/query/pay")
 	@ApiOperation(value="批量查询支付")
 	public CommonResult<Map<String, List<QueryConsumeResult>>> batchQueryPay(String orderNo){

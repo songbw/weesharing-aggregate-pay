@@ -70,5 +70,4 @@ public class QueryConsumeResult {
 		this.createDate = consume.getCreateDate();
 		this.limitPay   = consume.getLimitPay();
 	}
-
 }

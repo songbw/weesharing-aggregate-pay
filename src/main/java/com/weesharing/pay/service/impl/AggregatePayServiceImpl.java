@@ -277,6 +277,14 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	}
 	
 	@Override
+	public Integer doPreQuery(String orderNo) {
+		QueryWrapper<PreConsume> consumeQuery = new QueryWrapper<PreConsume>();
+		consumeQuery.eq("order_no", orderNo);
+		PreConsume consume = preConsumeService.getOne(consumeQuery);
+		return consume.getStatus();
+	}
+	
+	@Override
 	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.in("order_no", Arrays.asList(orderNo.split(",")));
