@@ -28,10 +28,10 @@ public class QueryConsumeRefundRequest {
     @ApiModelProperty(value = "交易类型", example = "consume", notes = "consume, refund")
     private String tradeType;
 
-    @ApiModelProperty(value = "开始时间", example = "", notes="yyyyMMddHHmmss")
+    @ApiModelProperty(value = "开始时间", example = "2019-10-01 00:00:00", notes="yyyyMMddHHmmss")
     private String startDate;
     
-    @ApiModelProperty(value = "结束时间", example = "", notes="yyyyMMddHHmmss")
+    @ApiModelProperty(value = "结束时间", example = "2019-10-30 00:00:00", notes="yyyyMMddHHmmss")
     private String endDate;
     
     @ApiModelProperty(value = "页码", example = "1")
