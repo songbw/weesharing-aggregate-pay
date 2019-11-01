@@ -34,8 +34,10 @@ public class QueryConsumeRefundRequest {
     @ApiModelProperty(value = "结束时间", example = "", notes="yyyyMMddHHmmss")
     private String endDate;
     
+    @ApiModelProperty(value = "页码", example = "1")
     private Long pageNum;
     
+    @ApiModelProperty(value = "条数", example = "10")
     private Long pageSize;
 
 }
