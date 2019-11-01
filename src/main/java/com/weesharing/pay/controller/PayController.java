@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weesharing.pay.common.CommonPage;
 import com.weesharing.pay.common.CommonResult;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.BankAuthBean;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
+import com.weesharing.pay.dto.QueryConsumeRefundRequest;
+import com.weesharing.pay.dto.QueryConsumeRefundResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
 import com.weesharing.pay.service.AggregatePayService;
@@ -95,6 +98,13 @@ public class PayController {
 	public CommonResult<List<QueryRefundResult>> refundQuery(String outRefundNo){
 		List<QueryRefundResult> refundResults = payService.doRefundQuery(outRefundNo);
 		return CommonResult.success(refundResults);
+	}
+	
+	@PostMapping("/query/candr")
+	@ApiOperation(value="查询消费记录", notes="candr = Consume and Refund")
+	public CommonResult<CommonPage<QueryConsumeRefundResult>> getQueryConsumeRefund(@RequestBody QueryConsumeRefundRequest request){
+		CommonPage<QueryConsumeRefundResult> result = payService.doQueryConsumeRefund(request);
+		return CommonResult.success(result);
 	}
 
 }

@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.weesharing.pay.common.CommonPage;
 import com.weesharing.pay.common.CommonResult2;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
@@ -25,6 +28,8 @@ import com.weesharing.pay.dto.BackRequest;
 import com.weesharing.pay.dto.BankAuthBean;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
+import com.weesharing.pay.dto.QueryConsumeRefundRequest;
+import com.weesharing.pay.dto.QueryConsumeRefundResult;
 import com.weesharing.pay.dto.QueryConsumeResult;
 import com.weesharing.pay.dto.QueryRefundResult;
 import com.weesharing.pay.dto.RefundResult;
@@ -47,6 +52,7 @@ import com.weesharing.pay.service.IPreRefundService;
 import com.weesharing.pay.service.IRefundService;
 import com.weesharing.pay.service.RedisService;
 
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
@@ -490,7 +496,6 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}
 		return refunds;
 	}
-	
 
 	@Override
 	public List<QueryRefundResult> doRefundQuery(String orderNo) {
@@ -511,6 +516,89 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}
 		return results;
 	}
+	
+	@Override
+	public CommonPage<QueryConsumeRefundResult> doQueryConsumeRefund(QueryConsumeRefundRequest request) {
+		
+		checkQueryConsumeAndRefundParam(request);
+		
+		if(request.getTradeType().equals("refund")) {
+			
+			QueryWrapper<Refund> wrapper = new QueryWrapper<Refund>();
+			if(StringUtils.isNotEmpty(request.getPayType())) {
+				wrapper.eq("pay_type", request.getPayType());
+			}
+			if(StringUtils.isNotEmpty(request.getOrderNo())) {
+				wrapper.eq("order_no", request.getOrderNo());
+			}
+			if(StringUtils.isNotEmpty(request.getCardNo())) {
+				wrapper.eq("card_no", request.getCardNo());
+			}
+			if(StringUtils.isNotEmpty(request.getStartDate())  &&  StringUtils.isNotEmpty(request.getEndDate())) {
+				wrapper.ge("create_date", request.getStartDate());
+				wrapper.lt("create_date", request.getEndDate());
+			}
+			wrapper.gt("status", 0);
+			
+			IPage<Refund> refundPage = refundService.page(new Page<Refund>(request.getPageNum(), request.getPageSize()), wrapper);
+			IPage<QueryConsumeRefundResult> results = new Page<QueryConsumeRefundResult>(refundPage.getCurrent(), refundPage.getSize(), refundPage.getTotal());
+			List<QueryConsumeRefundResult> qcrr = new ArrayList<QueryConsumeRefundResult>();
+			for(Refund refund : refundPage.getRecords()){
+				qcrr.add(new QueryConsumeRefundResult(refund));
+			};
+			results.setRecords(qcrr);
+			return CommonPage.restPage(results);
+		}
+		
+		if(request.getTradeType().equals("consume")) {
+			
+			QueryWrapper<Consume> wrapper = new QueryWrapper<Consume>();
+			if(StringUtils.isNotEmpty(request.getPayType())) {
+				wrapper.eq("pay_type", request.getPayType());
+			}
+			if(StringUtils.isNotEmpty(request.getOrderNo())) {
+				wrapper.eq("order_no", request.getOrderNo());
+			}
+			if(StringUtils.isNotEmpty(request.getCardNo())) {
+				wrapper.eq("card_no", request.getCardNo());
+			}
+			if(StringUtils.isNotEmpty(request.getStartDate())  &&  StringUtils.isNotEmpty(request.getEndDate())) {
+				wrapper.ge("create_date", request.getStartDate());
+				wrapper.lt("create_date", request.getEndDate());
+			}
+			wrapper.gt("status", 0);
+			
+			IPage<Consume> consumePage = consumeService.page(new Page<Consume>(request.getPageNum(), request.getPageSize()), wrapper);
+			IPage<QueryConsumeRefundResult> results = new Page<QueryConsumeRefundResult>(consumePage.getCurrent(), consumePage.getSize(), consumePage.getTotal());
+			List<QueryConsumeRefundResult> qcrr = new ArrayList<QueryConsumeRefundResult>();
+			for(Consume consume : consumePage.getRecords()){
+				qcrr.add(new QueryConsumeRefundResult(consume));
+			};
+			results.setRecords(qcrr);
+			return CommonPage.restPage(results);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 检查消费记录参数
+	 * @param request
+	 */
+	private void checkQueryConsumeAndRefundParam(QueryConsumeRefundRequest request) {
+		if(request.getPageNum() < 1 || request.getPageSize() < 1) {
+			throw new ServiceException("请检查页码");
+		}
+		if(request.getPageSize() > 100) {
+			throw new ServiceException("请检查翻页参数, 太大翻不动.");
+		}
+		if(StringUtils.isNotEmpty(request.getStartDate())  &&  StringUtils.isNotEmpty(request.getEndDate())) {
+			if(DateUtil.between(DateUtil.parse(request.getStartDate()), DateUtil.parse(request.getEndDate()), DateUnit.DAY) > 100) {
+				throw new ServiceException("请调整日期, 时间间隔太大, 切记小于100天");
+			}
+		}
+	}
+	
 
 	/**
 	 * 支付回调函数
@@ -566,5 +654,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		}
 		return false;
 	}
+
+	
 	
 }
