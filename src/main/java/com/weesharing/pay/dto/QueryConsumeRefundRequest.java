@@ -19,19 +19,19 @@ public class QueryConsumeRefundRequest {
 	@ApiModelProperty(value = "支付方式", example = "balance", notes="balance, card, woa")
 	private String payType;
 
-    @ApiModelProperty(value = "支付订单号")
+    @ApiModelProperty(value = "支付订单号", example = "")
     private String orderNo;
     
-    @ApiModelProperty(value = "卡号或OpenID")
+    @ApiModelProperty(value = "卡号或OpenID", example = "")
     private String cardNo;
     
     @ApiModelProperty(value = "交易类型", example = "consume", notes = "consume, refund")
     private String tradeType;
 
-    @ApiModelProperty(value = "开始时间", notes="yyyyMMddHHmmss")
+    @ApiModelProperty(value = "开始时间", example = "", notes="yyyyMMddHHmmss")
     private String startDate;
     
-    @ApiModelProperty(value = "结束时间", notes="yyyyMMddHHmmss")
+    @ApiModelProperty(value = "结束时间", example = "", notes="yyyyMMddHHmmss")
     private String endDate;
     
     private Long pageNum;
