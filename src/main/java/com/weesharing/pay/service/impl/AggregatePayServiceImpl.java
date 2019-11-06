@@ -538,7 +538,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 				wrapper.ge("create_date", request.getStartDate());
 				wrapper.lt("create_date", request.getEndDate());
 			}
-//			wrapper.eq("status", 1);
+//			wrapper.gt("status", 1);
 			wrapper.in("status", 1,3);
 			
 			IPage<Refund> refundPage = refundService.page(new Page<Refund>(request.getPageNum(), request.getPageSize()), wrapper);
@@ -567,7 +567,8 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 				wrapper.ge("create_date", request.getStartDate());
 				wrapper.lt("create_date", request.getEndDate());
 			}
-			wrapper.gt("status", 0);
+//			wrapper.gt("status", 0);
+			wrapper.in("status", 1,3);
 			
 			IPage<Consume> consumePage = consumeService.page(new Page<Consume>(request.getPageNum(), request.getPageSize()), wrapper);
 			IPage<QueryConsumeRefundResult> results = new Page<QueryConsumeRefundResult>(consumePage.getCurrent(), consumePage.getSize(), consumePage.getTotal());
