@@ -19,7 +19,7 @@ public class SSOServiceH implements SSOService {
 	}
 	
 	@Override
-	public CommonResult2<ConsumeResult> consume(BalanceConsumeData data) {
+	public CommonResult2<BalanceDetail> consume(BalanceConsumeData data) {
 		return CommonResult2.failed("余额支付失败");
 	}
 

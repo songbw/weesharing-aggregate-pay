@@ -23,6 +23,9 @@ public class QueryConsumeRefundResult {
 	
 	@ApiModelProperty(value = "支付方式")
 	private String payType;
+	
+	@ApiModelProperty(value = "支付人")
+	private String payer;
 
     @ApiModelProperty(value = "支付订单号")
     private String orderNo;
@@ -47,6 +50,7 @@ public class QueryConsumeRefundResult {
 
 	public QueryConsumeRefundResult(Consume consume) {
 		this.payType    = consume.getPayType();
+		this.payer      = consume.getPayer();
 		this.orderNo    = consume.getOrderNo();
 		this.cardNo     = consume.getCardNo();
 		this.tradeType  = "consume";
@@ -58,6 +62,7 @@ public class QueryConsumeRefundResult {
 	
 	public QueryConsumeRefundResult(Refund refund) {
 		this.payType    = refund.getPayType();
+		this.payer      = refund.getCardPwd();
 		this.orderNo    = refund.getOrderNo();
 		this.cardNo     = refund.getCardNo();
 		this.tradeType  = "refund";
