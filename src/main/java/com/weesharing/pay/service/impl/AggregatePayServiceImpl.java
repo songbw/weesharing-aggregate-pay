@@ -502,6 +502,22 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		refundQuery.eq("out_refund_no", orderNo);
 		List<Refund> refunds = refundService.list(refundQuery);
+		return getQueryRefundResult(refunds);
+	}
+	
+	@Override
+	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo) {
+		Map<String, List<QueryRefundResult>> queryResults = new HashMap<String, List<QueryRefundResult>>();
+		for(String num : orderNo.split(",")) {
+			QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
+			refundQuery.eq("order_no", num);
+			List<Refund> refunds = refundService.list(refundQuery);
+			queryResults.put(num, getQueryRefundResult(refunds));
+		}
+		return queryResults;
+	}
+	
+	private List<QueryRefundResult> getQueryRefundResult(List<Refund> refunds){
 		List<QueryRefundResult> results = new ArrayList<QueryRefundResult>();
 		for(Refund refund: refunds) {
 			String bankStatusResult = "退款查询异常";
@@ -515,15 +531,6 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			results.add(new QueryRefundResult(refund,  bankStatusResult));
 		}
 		return results;
-	}
-	
-	@Override
-	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo) {
-		Map<String, List<QueryRefundResult>> queryResults = new HashMap<String, List<QueryRefundResult>>();
-		for(String num : orderNo.split(",")) {
-			queryResults.put(num, doRefundQuery(num));
-		}
-		return queryResults;
 	}
 	
 	@Override
