@@ -62,7 +62,7 @@ public class QueryConsumeRefundResult {
 	
 	public QueryConsumeRefundResult(Refund refund) {
 		this.payType    = refund.getPayType();
-		this.payer      = refund.getCardPwd();
+		this.payer      = refund.getTradeNo();
 		this.orderNo    = refund.getOrderNo();
 		this.cardNo     = refund.getCardNo();
 		this.tradeType  = "refund";

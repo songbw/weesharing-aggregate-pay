@@ -59,7 +59,7 @@ public class BalancePayServiceImpl implements IPayService{
 		log.info("请求余额退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
-			refund.setCardPwd(commonResult.getData().getTelephone());
+			refund.setTradeNo(commonResult.getData().getTelephone());
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() == 500) {
