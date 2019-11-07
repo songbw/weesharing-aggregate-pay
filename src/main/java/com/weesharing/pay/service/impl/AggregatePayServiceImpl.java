@@ -291,7 +291,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	}
 	
 	@Override
-	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo) {
+	public Map<String, List<QueryConsumeResult>> doBatchQueryPay(String orderNo) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.in("order_no", Arrays.asList(orderNo.split(",")));
 		List<Consume> consumes = consumeService.list(consumeQuery);
@@ -309,7 +309,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		
 		return queryResults;
 	}
-
+	
 	@Override
 	public String doRefund(AggregateRefund refund) {
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
@@ -515,6 +515,15 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			results.add(new QueryRefundResult(refund,  bankStatusResult));
 		}
 		return results;
+	}
+	
+	@Override
+	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo) {
+		Map<String, List<QueryRefundResult>> queryResults = new HashMap<String, List<QueryRefundResult>>();
+		for(String num : orderNo.split(",")) {
+			queryResults.put(num, doRefundQuery(num));
+		}
+		return queryResults;
 	}
 	
 	@Override

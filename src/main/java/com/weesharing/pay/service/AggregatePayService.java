@@ -24,11 +24,13 @@ public interface AggregatePayService {
 	
 	public Integer doPreQuery(String orderNo);
 	
-	public Map<String, List<QueryConsumeResult>> doBatchQuery(String orderNo);
+	public Map<String, List<QueryConsumeResult>> doBatchQueryPay(String orderNo);
 	
 	public String doRefund(AggregateRefund refund);
 	
 	public List<QueryRefundResult> doRefundQuery(String outTradeNo);
+	
+	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo);
 	
 	public String fastPayAuth(BankAuthBean auth);
 	

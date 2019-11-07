@@ -78,8 +78,15 @@ public class PayController {
 	@GetMapping("/batch/query/pay")
 	@ApiOperation(value="批量查询支付")
 	public CommonResult<Map<String, List<QueryConsumeResult>>> batchQueryPay(String orderNo){
-		Map<String, List<QueryConsumeResult>> consumeResults = payService.doBatchQuery(orderNo);
+		Map<String, List<QueryConsumeResult>> consumeResults = payService.doBatchQueryPay(orderNo);
 		return CommonResult.success(consumeResults);
+	}
+	
+	@GetMapping("/batch/query/refund")
+	@ApiOperation(value="批量查询退款")
+	public CommonResult<Map<String, List<QueryRefundResult>>> batchQueryRefund(String orderNo){
+		Map<String, List<QueryRefundResult>> refundResults = payService.doBatchQueryRefund(orderNo);
+		return CommonResult.success(refundResults);
 	}
 	
 	@PostMapping("/refund")
