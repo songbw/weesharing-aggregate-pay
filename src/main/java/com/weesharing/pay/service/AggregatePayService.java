@@ -28,9 +28,9 @@ public interface AggregatePayService {
 	
 	public String doRefund(AggregateRefund refund);
 	
-	public List<QueryRefundResult> doRefundQuery(String outTradeNo);
+	public List<QueryRefundResult> doRefundQuery(String outRefundNo);
 	
-	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo);
+	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String outRefundNos);
 	
 	public String fastPayAuth(BankAuthBean auth);
 	

@@ -498,19 +498,19 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	}
 
 	@Override
-	public List<QueryRefundResult> doRefundQuery(String orderNo) {
+	public List<QueryRefundResult> doRefundQuery(String outRefundNo) {
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-		refundQuery.eq("out_refund_no", orderNo);
+		refundQuery.eq("out_refund_no", outRefundNo);
 		List<Refund> refunds = refundService.list(refundQuery);
 		return getQueryRefundResult(refunds);
 	}
 	
 	@Override
-	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String orderNo) {
+	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String outRefundNos) {
 		Map<String, List<QueryRefundResult>> queryResults = new HashMap<String, List<QueryRefundResult>>();
-		for(String num : orderNo.split(",")) {
+		for(String num : outRefundNos.split(",")) {
 			QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-			refundQuery.eq("order_no", num);
+			refundQuery.eq("out_refund_no", num);
 			List<Refund> refunds = refundService.list(refundQuery);
 			queryResults.put(num, getQueryRefundResult(refunds));
 		}
