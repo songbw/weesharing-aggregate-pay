@@ -20,7 +20,7 @@ public class FastBankPayServiceH implements FallbackFactory<FastBankPayService> 
 
 	@Override
 	public FastBankPayService create(Throwable cause) {
-		return new FastBankPayServiceFallBack() {
+		return new FastBankPayService() {
 
 			@Override
 			public CommonResult2<BankAuthResult> bankAuth(BankAuthBeanData data) {
