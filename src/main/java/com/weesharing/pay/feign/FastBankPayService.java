@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.weesharing.pay.common.CommonResult2;
-import com.weesharing.pay.feign.hystric.FastBankPayServiceH;
+import com.weesharing.pay.feign.hystric.FastBankPayServiceFallBack;
 import com.weesharing.pay.feign.param.BankAuthBeanData;
 import com.weesharing.pay.feign.param.BankConsumeData;
 import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
 
-@FeignClient(value = "cardPayment", fallback = FastBankPayServiceH.class)
+@FeignClient(value = "cardPayment", fallbackFactory = FastBankPayServiceFallBack.class)
 public interface FastBankPayService {
 	
     @RequestMapping(value = "/ztkx/cardPayment/auth", method = RequestMethod.POST)

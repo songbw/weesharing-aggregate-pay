@@ -11,34 +11,42 @@ import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
 
 import cn.hutool.json.JSONUtil;
+import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class FastBankPayServiceH implements FastBankPayService{
-	
-	@Override
-	public CommonResult2<BankAuthResult> bankAuth(BankAuthBeanData data) {
-		log.info("快捷支付鉴权失败, 参数:{}", JSONUtil.wrap(data, false) );
-		return CommonResult2.failed("快捷支付鉴权失败");
-	}
+public class FastBankPayServiceH implements FallbackFactory<FastBankPayService> {
 
 	@Override
-	public CommonResult2<BankConsumeResult> consume(BankConsumeData tcd) {
-		log.info("快捷支付失败, 参数:{}", JSONUtil.wrap(tcd, false) );
-		return CommonResult2.failed("快捷支付鉴权失败");
+	public FastBankPayService create(Throwable cause) {
+		return new FastBankPayServiceFallBack() {
+
+			@Override
+			public CommonResult2<BankAuthResult> bankAuth(BankAuthBeanData data) {
+				log.info("快捷支付鉴权失败, 参数:{}", JSONUtil.wrap(data, false));
+				return CommonResult2.failed(cause.getMessage());
+			}
+
+			@Override
+			public CommonResult2<BankConsumeResult> consume(BankConsumeData tcd) {
+				log.info("快捷支付失败, 参数:{}", JSONUtil.wrap(tcd, false));
+				return CommonResult2.failed(cause.getMessage());
+			}
+
+			@Override
+			public CommonResult2<String> refund(BankRefundData trd) {
+				log.info("快捷支付退款失败, 参数:{}", JSONUtil.wrap(trd, false));
+				return CommonResult2.failed(cause.getMessage());
+			}
+
+			@Override
+			public CommonResult2<String> refundStatus(String tranFlow) {
+				log.info("快捷支付退款查询失败, 参数:{}", JSONUtil.wrap(tranFlow, false));
+				return CommonResult2.failed(cause.getMessage());
+			}
+
+		};
 	}
 
-	@Override
-	public CommonResult2<String> refund(BankRefundData trd) {
-		log.info("快捷支付退款失败, 参数:{}", JSONUtil.wrap(trd, false) );
-		return CommonResult2.failed("快捷支付退款失败");
-	}
-
-	@Override
-	public CommonResult2<String> refundStatus(String tranFlow) {
-		log.info("快捷支付退款查询失败, 参数:{}", JSONUtil.wrap(tranFlow, false) );
-		return CommonResult2.failed("快捷支付退款查询失败");
-	}
-	
 }
