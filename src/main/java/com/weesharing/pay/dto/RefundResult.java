@@ -3,7 +3,6 @@ package com.weesharing.pay.dto;
 import java.time.LocalDateTime;
 
 import com.weesharing.pay.entity.PreRefund;
-import com.weesharing.pay.entity.Refund;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

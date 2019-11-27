@@ -3,6 +3,7 @@ package com.weesharing.pay.feign.param;
 import java.math.BigDecimal;
 
 import com.weesharing.pay.dto.pay.BankPay;
+import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.feign.result.BankAuthResult;
 
 import lombok.Data;
@@ -23,8 +24,9 @@ public class BankConsumeData {
 	private String merOrderId;
 	private String phoneToken;
 	private String verifyCode;
+	private String orderId;
 	
-	public BankConsumeData(BankPay pay, BankAuthResult auth) {
+	public BankConsumeData(BankPay pay, BankAuthResult auth, Consume consume) {
 		
 		this.accountId = pay.getAccountId();
 		this.accountName = pay.getAccountName();
@@ -35,6 +37,7 @@ public class BankConsumeData {
 		this.tranAmt = new BigDecimal(pay.getActPayFee()).divide(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_EVEN);
 		this.accountType = pay.getAccountType();
 		this.verifyCode = pay.getVerifyCode();
+		this.orderId = consume.getOutTradeNo();
 		
 		this.authId = auth.getId();
 		this.custId = auth.getCustId();

@@ -14,7 +14,7 @@ import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
 
-@FeignClient(value = "cardPayment", fallback = FastBankPayServiceH.class)
+@FeignClient(value = "cardPayment", fallbackFactory = FastBankPayServiceH.class)
 public interface FastBankPayService {
 	
     @RequestMapping(value = "/ztkx/cardPayment/auth", method = RequestMethod.POST)

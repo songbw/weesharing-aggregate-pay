@@ -34,7 +34,7 @@ public class BankPayServiceImpl implements IPayService {
 		BankPay pay = JSONUtil.toBean(redisService.get("bank_pay:" + consume.getOrderNo()), BankPay.class);
 		redisService.remove("bank_auth:" + consume.getOrderNo());
 		redisService.remove("bank_pay:" + consume.getOrderNo());
-		BankConsumeData tcd = new BankConsumeData(pay, auth);
+		BankConsumeData tcd = new BankConsumeData(pay, auth, consume);
 		CommonResult2<BankConsumeResult> commonResult = BeanContext.getBean(FastBankPayService.class).consume(tcd);
 		log.info("请求快捷支付支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
