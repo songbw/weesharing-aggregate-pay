@@ -1,4 +1,4 @@
-package com.weesharing.pay.dto;
+package com.weesharing.pay.dto.pay;
 
 import javax.validation.constraints.NotBlank;
 

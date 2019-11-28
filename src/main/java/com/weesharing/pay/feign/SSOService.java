@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.weesharing.pay.common.CommonResult2;
-import com.weesharing.pay.dto.BackRequest;
+import com.weesharing.pay.dto.callback.OrderCallBack;
 import com.weesharing.pay.feign.hystric.SSOServiceH;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
@@ -23,6 +23,6 @@ public interface SSOService {
 	CommonResult2<BalanceDetail> refund(@RequestBody BalanceRefundData data);
 
 	@RequestMapping(value = "/payment/pingan/back", method = RequestMethod.POST)
-	CommonResult2<ConsumeResult> pinganPosBack(@RequestBody BackRequest bean);
+	CommonResult2<ConsumeResult> pinganPosBack(@RequestBody OrderCallBack bean);
 
 }

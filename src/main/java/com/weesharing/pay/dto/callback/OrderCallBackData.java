@@ -1,11 +1,11 @@
-package com.weesharing.pay.dto;
+package com.weesharing.pay.dto.callback;
 
 import com.weesharing.pay.entity.PreConsume;
 
 import lombok.Data;
 
 @Data
-public class BackBean {
+public class OrderCallBackData {
     // 商户号，充值钱包的时候没有
     private String payee ;
     // 退款金额，退款时候有
@@ -27,7 +27,7 @@ public class BackBean {
     // 1支付，2充值，3退款，4提现
     private int orderCategory ;
     
-    public BackBean(PreConsume consume) {
+    public OrderCallBackData(PreConsume consume) {
 		this.payType    = consume.getPayType();
 		this.orderNo    = consume.getOrderNo();
 		this.outTradeNo = consume.getOutTradeNo();

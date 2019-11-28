@@ -2,7 +2,7 @@ package com.weesharing.pay.feign.param;
 
 import java.math.BigDecimal;
 
-import com.weesharing.pay.dto.BankAuthBean;
+import com.weesharing.pay.dto.pay.BankAuthBean;
 
 import lombok.Data;
 

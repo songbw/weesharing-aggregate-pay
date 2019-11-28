@@ -96,7 +96,7 @@ public class AggregateRefund {
         return refund;
     }
     
-    public Refund conver(PreRefund preRefund, Consume consume) {
+    public Refund convert(PreRefund preRefund, Consume consume) {
 		Refund refund = new Refund();
 		refund.setOutRefundNo(preRefund.getOutRefundNo());
 		refund.setMerchantCode(preRefund.getMerchantCode());

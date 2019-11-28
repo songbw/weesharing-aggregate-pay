@@ -1,4 +1,4 @@
-package com.weesharing.pay.dto;
+package com.weesharing.pay.dto.query;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

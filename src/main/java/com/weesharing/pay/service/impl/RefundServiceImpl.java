@@ -3,7 +3,7 @@ package com.weesharing.pay.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.weesharing.pay.dto.pay.PayType;
+import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.mapper.RefundMapper;
 import com.weesharing.pay.service.IPayService;

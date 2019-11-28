@@ -3,7 +3,7 @@ package com.weesharing.pay.feign.hystric;
 import org.springframework.stereotype.Component;
 
 import com.weesharing.pay.common.CommonResult2;
-import com.weesharing.pay.dto.BackRequest;
+import com.weesharing.pay.dto.callback.OrderCallBack;
 import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
@@ -14,7 +14,7 @@ import com.weesharing.pay.feign.result.ConsumeResult;
 public class SSOServiceH implements SSOService {
 
 	@Override
-	public CommonResult2<ConsumeResult> pinganPosBack(BackRequest bean) {
+	public CommonResult2<ConsumeResult> pinganPosBack(OrderCallBack bean) {
 		return CommonResult2.failed("回调SSO失败");
 	}
 	

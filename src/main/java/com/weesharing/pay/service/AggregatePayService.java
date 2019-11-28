@@ -6,13 +6,13 @@ import java.util.Map;
 import com.weesharing.pay.common.CommonPage;
 import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
-import com.weesharing.pay.dto.BankAuthBean;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
-import com.weesharing.pay.dto.QueryConsumeRefundRequest;
-import com.weesharing.pay.dto.QueryConsumeRefundResult;
-import com.weesharing.pay.dto.QueryConsumeResult;
-import com.weesharing.pay.dto.QueryRefundResult;
+import com.weesharing.pay.dto.pay.BankAuthBean;
+import com.weesharing.pay.dto.query.QueryConsumeRefundRequest;
+import com.weesharing.pay.dto.query.QueryConsumeRefundResult;
+import com.weesharing.pay.dto.query.QueryConsumeResult;
+import com.weesharing.pay.dto.query.QueryRefundResult;
 
 public interface AggregatePayService {
 	

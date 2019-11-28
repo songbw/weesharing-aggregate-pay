@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.weesharing.pay.dto.pay.PayType;
+import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.exception.ServiceException;
