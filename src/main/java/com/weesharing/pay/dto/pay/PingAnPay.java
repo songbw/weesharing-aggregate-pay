@@ -7,16 +7,13 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BalancePay extends BasePayBean{
-	
-	private String openId;
+public class PingAnPay extends BasePayBean{
 	
 	public Consume convert() {
 		Consume consume  = new Consume();
 		consume.setPayType(this.getPayType());
 		consume.setOrderNo(this.getOrderNo());
 		consume.setActPayFee(this.getActPayFee());
-		consume.setCardNo(this.getOpenId());
 		return consume;
 	}
 

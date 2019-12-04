@@ -14,5 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IRefundService extends IService<Refund> {
 	
 	public void doRefund(Refund refund);
+	
+	public String doAsyncRefund(Refund refund);
 
 }

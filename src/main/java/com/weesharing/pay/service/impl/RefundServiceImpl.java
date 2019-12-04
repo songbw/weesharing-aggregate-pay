@@ -5,9 +5,20 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Refund;
+import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.mapper.RefundMapper;
-import com.weesharing.pay.service.IPayService;
+import com.weesharing.pay.service.IPayAsyncService;
+import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.service.IRefundService;
+import com.weesharing.pay.service.impl.async.FcAliPayServiceImpl;
+import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
+import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
+import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
+import com.weesharing.pay.service.impl.async.PingAnPayServiceImpl;
+import com.weesharing.pay.service.impl.sync.BalancePayServiceImpl;
+import com.weesharing.pay.service.impl.sync.BankPayServiceImpl;
+import com.weesharing.pay.service.impl.sync.WOAPayServiceImpl;
+import com.weesharing.pay.service.impl.sync.WOCPayServiceImpl;
 
 /**
  * <p>
@@ -20,10 +31,13 @@ import com.weesharing.pay.service.IRefundService;
 @Service
 public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> implements IRefundService {
 
-	private IPayService wsPayService;
-	
+	/**
+	 * 同步退款
+	 */
 	@Override
 	public void doRefund(Refund refund) {
+		
+		IPaySyncService wsPayService = null;
 		//记录退款记录
 		refund.insert();
 		
@@ -39,8 +53,46 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		if(refund.getPayType().equals(PayType.BANK.getName())){  
 			wsPayService = new BankPayServiceImpl();
 		}
-		wsPayService.doRefund(refund);
 		
+		if(wsPayService != null) {
+			wsPayService.doRefund(refund);
+		}else {
+			throw new ServiceException("[同步退款]: 不支持此退款方式");
+		}
+		
+	}
+
+	/**
+	 * 异步退款
+	 */
+	@Override
+	public String doAsyncRefund(Refund refund) {
+		
+		IPayAsyncService wsPayAsynService = null;
+		//记录退款记录
+		refund.insert();
+		
+		if(refund.getPayType().equals(PayType.FCALIPAY.getName())){  
+			wsPayAsynService = new FcAliPayServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.FCWX.getName())){  
+			wsPayAsynService = new FcWxPayServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.FCWXH5.getName())){  
+			wsPayAsynService = new FcWxH5PayServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.FCWXXCX.getName())){  
+			wsPayAsynService = new FcWxXcxPayServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.PINGAN.getName())){  
+			wsPayAsynService = new PingAnPayServiceImpl();
+		}
+		
+		if(wsPayAsynService != null) {
+			return wsPayAsynService.doRefund(refund);
+		}else {
+			throw new ServiceException("[异步退款]: 不支持此退款方式");
+		}
 	}
 
 }

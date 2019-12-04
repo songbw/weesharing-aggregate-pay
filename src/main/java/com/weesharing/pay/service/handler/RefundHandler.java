@@ -26,7 +26,6 @@ import com.weesharing.pay.service.IPreRefundService;
 import com.weesharing.pay.service.IRefundService;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -113,16 +112,12 @@ public class RefundHandler {
 	}
 	
 	private void asyncRefund(PreRefund preRefund, AggregateRefund refund) {
-		
 		executor.submit(new Runnable(){
-
 			@Override
 			public void run() {
-				PreRefund refundResult = autoAllocationRefund(preRefund, refund);
-				//回调
-				WorkOrderCallBack result  = new WorkOrderCallBack(refundResult);
-				refundNotifyHandler(result);
-			}});
+				autoAllocationRefund(preRefund, refund);
+			}
+		});
 	}
 	
 	/**
@@ -132,18 +127,24 @@ public class RefundHandler {
 	 * @param refundTotal
 	 * @return
 	 */
-	private PreRefund autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
-		//1: 成功, 2: 失败, 3: 部分失败, 0: 新创建
+	private void autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
+		//1: 成功, 2: 失败, 3: 部分失败, 0: 新创建, 4: 退款中
 		Long refundTotal = Long.parseLong(aggregateRefund.getRefundFee());
 		log.info("总退款金额: {}", refundTotal);
 		Long remainTotal = 0L;
-		
+		boolean isAsync = false;
 		if (refundTotal > 0) {
 			List<Consume> consumes = autoAllocationRefundHandler(preRefund, aggregateRefund, refundTotal);
 			for (Consume refund : consumes) {
 				try {
 					remainTotal = remainTotal + Long.parseLong(refund.getActPayFee());
-					refundService.doRefund(aggregateRefund.convert(preRefund, refund));
+					if(checkPayType(refund.getPayType())) {
+						refundService.doAsyncRefund(aggregateRefund.convert(preRefund, refund));
+						isAsync = true;
+					}else {
+						refundService.doRefund(aggregateRefund.convert(preRefund, refund));
+					}
+					
 				} catch (Exception e) {
 					log.info("退款异常:{}", e.getMessage());
 					remainTotal = remainTotal - Long.parseLong(refund.getActPayFee());
@@ -151,7 +152,9 @@ public class RefundHandler {
 			}
 			
 			//设置退款状态
-			if(remainTotal == 0) {
+			if(isAsync) {
+				preRefund.setStatus(4);
+			}else if(remainTotal == 0) {
 				preRefund.setStatus(2);
 			}else if(remainTotal > 0 && remainTotal < refundTotal) {
 				preRefund.setStatus(3);
@@ -164,7 +167,14 @@ public class RefundHandler {
 			preRefund.insertOrUpdate();
 		}
 		
-		return preRefund;
+		//存在异步退款等待消息
+		//不存在回调工单
+		if(isAsync) {
+			return;
+		}else {
+			WorkOrderCallBack result  = new WorkOrderCallBack(preRefund);
+			refundNotifyHandler(result);
+		}
 	}
 	
 	/**
@@ -177,20 +187,19 @@ public class RefundHandler {
 	 */
 	private List<Consume> autoAllocationRefundHandler(PreRefund preRefund, AggregateRefund refund, Long refundTotal) {
 		
-		String refundTypes[] = {PayType.BALANCE.getName(), PayType.CARD.getName(), PayType.WOA.getName(), PayType.BANK.getName()};
 		List<Consume> refunds = new ArrayList<Consume>();
 		
-		for(String refundType: refundTypes) {
+		for(PayType refundType : PayType.values()) {
 			if (refundTotal > 0) {
 				QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
-				consumeQuery.eq("pay_type", refundType);
+				consumeQuery.eq("pay_type", refundType.getName());
 				consumeQuery.eq("order_no", refund.getOrderNo());
 				consumeQuery.eq("status", 1);
 				List<Consume> consumes = consumeService.list(consumeQuery);
 				Long payTotal = consumes.stream().mapToLong(pay -> Long.parseLong(pay.getActPayFee())).sum();
 				
 				QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-				refundQuery.eq("pay_type", refundType);
+				refundQuery.eq("pay_type", refundType.getName());
 				refundQuery.eq("order_no", refund.getOrderNo());
 				refundQuery.eq("status", 1);
 				List<Refund> refundeds = refundService.list(refundQuery);
@@ -233,24 +242,20 @@ public class RefundHandler {
 		return refunds;
 	}
 	
+	private boolean checkPayType(String payType) {
+		 if(PayType.valueOf(payType.toUpperCase()).getWay().equals("async")) {
+			 return true;
+		 }
+		 return false;
+	}
+	
 
 	/**
 	 * 退款回调函数
 	 * @param notifyUrl
 	 * @param json
 	 */
-	@SuppressWarnings("unused")
-	private void refundNotifyHandler(String notifyUrl, String json) {
-		executor.submit(new Runnable(){
-			@Override
-			public void run() {
-				log.debug("退款回调, 准备回调地址:{}, 参数: {}", notifyUrl, json);
-				HttpUtil.post(notifyUrl, json);
-			}
-		});
-	}
-	
-	private void refundNotifyHandler(WorkOrderCallBack result) {
+	public void refundNotifyHandler(WorkOrderCallBack result) {
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {

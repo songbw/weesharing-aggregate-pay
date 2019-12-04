@@ -8,7 +8,10 @@ import cn.hutool.json.JSONUtil;
 public class JSONGen {
 	
 	public static void main(String[] args) {
-		System.out.println(JSONUtil.wrap(PayType.values(), false));
+		
+		
+		System.out.println(PayType.valueOf("card".toUpperCase()).getWay().equals("async"));
+//		System.out.println(JSONUtil.wrap(PayType.values(), false));
 	}
 
 }

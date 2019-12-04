@@ -1,4 +1,4 @@
-package com.weesharing.pay.service.impl;
+package com.weesharing.pay.service.impl.sync;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ import com.weesharing.pay.feign.param.BankConsumeData;
 import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
-import com.weesharing.pay.service.IPayService;
+import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.service.RedisService;
 
 import cn.hutool.core.date.DateUtil;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value = "bankPayService")
-public class BankPayServiceImpl implements IPayService {
+public class BankPayServiceImpl implements IPaySyncService {
 	
 	@Override
 	public void doPay(Consume consume) {

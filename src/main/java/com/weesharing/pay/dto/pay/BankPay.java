@@ -1,26 +1,16 @@
 package com.weesharing.pay.dto.pay;
 
-import javax.validation.constraints.NotBlank;
-
 import com.weesharing.pay.entity.Consume;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-@Data
-public class BankPay {
-	
-	@ApiModelProperty(value = "支付方式: bank", example = "bank")
-	@NotBlank(message = "支付方式不能为空")
-	private String payType;
-
-	@ApiModelProperty(value = "支付订单号")
-	@NotBlank(message = "支付订单号不能为空")
-	private String orderNo;
-
-	@ApiModelProperty(value = "交易实际金额", example = "11")
-	@NotBlank(message = "交易实际金额不能为空")
-	private String actPayFee;
+@Setter
+@Getter
+@Accessors(chain = true)
+public class BankPay extends BasePayBean{
 	
 	@ApiModelProperty(value = "银行卡号", example = "6226223329441365")
 	private String accountId;
@@ -49,10 +39,10 @@ public class BankPay {
 	public Consume convert() {
 		
 		Consume consume  = new Consume();
-		consume.setPayType(this.payType);
-		consume.setOrderNo(this.orderNo);
-		consume.setActPayFee(this.actPayFee);
-		consume.setCardNo(this.accountId);
+		consume.setPayType(this.getPayType());
+		consume.setOrderNo(this.getOrderNo());
+		consume.setActPayFee(this.getActPayFee());
+		consume.setCardNo(this.getAccountId());
 		consume.setCardPwd(this.getCvv2());
 		consume.setPayer(this.getMobileNo());
 		return consume;

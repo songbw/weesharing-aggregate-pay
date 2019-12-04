@@ -3,8 +3,9 @@ package com.weesharing.pay.service;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.Refund;
 
-public interface IPayService {
+public interface IPayAsyncService {
 
-	public void doPay(Consume consume);	
-	public void doRefund(Refund refund);
+	public String doPay(Consume consume);	
+	
+	public String doRefund(Refund refund);
 }

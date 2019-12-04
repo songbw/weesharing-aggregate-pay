@@ -1,4 +1,4 @@
-package com.weesharing.pay.service.impl;
+package com.weesharing.pay.service.impl.sync;
 
 import java.util.Date;
 
@@ -13,7 +13,7 @@ import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.feign.param.BalanceConsumeData;
 import com.weesharing.pay.feign.param.BalanceRefundData;
 import com.weesharing.pay.feign.result.BalanceDetail;
-import com.weesharing.pay.service.IPayService;
+import com.weesharing.pay.service.IPaySyncService;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service("balancePayService")
-public class BalancePayServiceImpl implements IPayService{
+public class BalancePayServiceImpl implements IPaySyncService{
 	
 	/**
 	 * 调用余额账户
@@ -41,7 +41,7 @@ public class BalancePayServiceImpl implements IPayService{
 			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			consume.setStatus(1);
 			consume.insertOrUpdate();
-		} else if(commonResult.getCode() == 500) {
+		} else if(commonResult.getCode() != 200) {
 			consume.setStatus(2);
 			consume.insertOrUpdate();
 			throw new ServiceException(commonResult.getMsg());
@@ -62,7 +62,7 @@ public class BalancePayServiceImpl implements IPayService{
 			refund.setTradeNo(commonResult.getData().getTelephone());
 			refund.setStatus(1);
 			refund.insertOrUpdate();
-		} else if (commonResult.getCode() == 500) {
+		} else if (commonResult.getCode() != 200) {
 			refund.setStatus(2);
 			refund.insertOrUpdate();
 			throw new ServiceException(commonResult.getMsg());

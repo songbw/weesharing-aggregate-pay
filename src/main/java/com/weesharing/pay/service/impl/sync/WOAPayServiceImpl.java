@@ -1,4 +1,4 @@
-package com.weesharing.pay.service.impl;
+package com.weesharing.pay.service.impl.sync;
 
 import org.springframework.stereotype.Service;
 
@@ -12,14 +12,14 @@ import com.weesharing.pay.feign.param.WOAConsumeData;
 import com.weesharing.pay.feign.param.WOARefundData;
 import com.weesharing.pay.feign.result.ConsumeResult;
 import com.weesharing.pay.feign.result.RefundResult;
-import com.weesharing.pay.service.IPayService;
+import com.weesharing.pay.service.IPaySyncService;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service("woaPayService")
-public class WOAPayServiceImpl implements IPayService{
+public class WOAPayServiceImpl implements IPaySyncService{
 	
 	@Override
 	public void doPay(Consume consume) {
@@ -33,7 +33,7 @@ public class WOAPayServiceImpl implements IPayService{
 			consume.setTradeDate(commonResult.getData().getTradeDate());
 			consume.setStatus(1);
 			consume.insertOrUpdate();
-		} else if(commonResult.getCode() == 500) {
+		} else if(commonResult.getCode() != 200) {
 			consume.setStatus(2);
 			consume.insertOrUpdate();
 			throw new ServiceException(commonResult.getMessage());
@@ -52,7 +52,7 @@ public class WOAPayServiceImpl implements IPayService{
 			refund.setTradeDate(commonResult.getData().getTradeDate());
 			refund.setStatus(commonResult.getData().getStatus());
 			refund.insertOrUpdate();
-		} else if (commonResult.getCode() == 500) {
+		} else if (commonResult.getCode() != 200) {
 			refund.setStatus(2);
 			refund.insertOrUpdate();
 			throw new ServiceException(commonResult.getMessage());

@@ -44,7 +44,8 @@ public class WechatPay {
 		String subject = "下单" + payOrderNo;
 		String body = "买东西" + payOrderNo;
 		userEntryInfo(requestNo, platformUserNo);
-		unifiedOrderPay(requestNo, platformUserNo, payOrderNo, subject, body);
+		onlineOrderPay(requestNo, platformUserNo, payOrderNo, subject, body);
+		orderRefundPay(requestNo, platformUserNo, payOrderNo);
 		
 	}
 	
@@ -61,11 +62,11 @@ public class WechatPay {
 		}
 	}
 	
-	public String unifiedOrderPay(String requestNo, String platformUserNo, String payOrderNo, String subject, String body) {
-		String resp = HttpUtil.post(apipay_sit_url, unifiedOrderPayParam(requestNo, platformUserNo, payOrderNo, subject, body));
-		log.info("[unifiedOrderPay] resp:" + resp);
+	public String onlineOrderPay(String requestNo, String platformUserNo, String payOrderNo, String subject, String body) {
+		String resp = HttpUtil.post(apipay_sit_url, onlineOrderPayParam(requestNo, platformUserNo, payOrderNo, subject, body));
+		log.info("[onlineOrderPay] resp:" + resp);
 		boolean verify = verifyJson(resp);
-		log.info("[unifiedOrderPay] verify:" + verify);
+		log.info("[onlineOrderPay] verify:" + verify);
 		if(verify) {
 			JSONObject result =JSONUtil.parseObj(resp);
 			return result.getStr("respData");
@@ -74,13 +75,26 @@ public class WechatPay {
 		}
 	}
 	
-	private String unifiedOrderPayParam(String requestNo, String platformUserNo, String payOrderNo, String subject, String body) {
+	public String orderRefundPay(String requestNo, String platformUserNo, String payOrderNo) {
+		String resp = HttpUtil.post(apipay_sit_url, orderRefundParam(requestNo, platformUserNo, payOrderNo));
+		log.info("[orderRefundPay] resp:" + resp);
+		boolean verify = verifyJson(resp);
+		log.info("[orderRefundPay] verify:" + verify);
+		if(verify) {
+			JSONObject result =JSONUtil.parseObj(resp);
+			return result.getStr("respData");
+		}else {
+			throw new ServiceException("ORDER_REFUND verify exception");
+		}
+	}
+	
+	private String onlineOrderPayParam(String requestNo, String platformUserNo, String payOrderNo, String subject, String body) {
 		/**
 		 * =============================================
-		 * 封装UNIFIED_ORDER_PAY参数
+		 * 封装ONLINE_ORDER_PAY参数
 		 * =============================================
 		{
-		    serviceName: 'UNIFIED_ORDER_PAY',
+		    serviceName: 'ONLINE_ORDER_PAY',
 		    platformNo: '2046',
 		    reqData: {
 		        requestNo: '200045435'
@@ -101,7 +115,7 @@ public class WechatPay {
 		 */
 		
 		Map<String, Object> param = new HashMap<>();
-		param.put("serviceName", "UNIFIED_ORDER_PAY");
+		param.put("serviceName", "ONLINE_ORDER_PAY");
 		param.put("platformNo", platform_code);
 		
 		Map<String, Object> reqData = new HashMap<>();
@@ -117,6 +131,10 @@ public class WechatPay {
 		reqData.put("subject", subject);
 		reqData.put("body", body);
 		reqData.put("customDefine", "AGGPAY");
+		
+		reqData.put("realIp", "192.168.0.1");
+		reqData.put("redirectUrl", "http://www.baidu.com");
+		
 		
 		reqData.put("timestamp", DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 		
@@ -159,6 +177,45 @@ public class WechatPay {
 		
 		String json = JSONUtil.wrap(param, false).toString();
 		log.info("[userEntryInfoParam]:" + json);
+		return json;
+
+	}
+	
+	private String orderRefundParam(String requestNo, String platformUserNo, String payOrderNo) {
+		/**
+		 * =============================================
+		 * 封装ORDER_REFUND参数
+		 * =============================================
+		{
+			serviceName: 'ORDER_REFUND',
+			platformNo: '2046',
+			reqData: {
+				requestNo: '200045435'
+				platformUserNo: USER001,
+				platformOrderNo: OTTR3432432,
+				customDefine: ABCDEF,
+				timestamp: 20160102010234,
+			},
+		  	sign: 'sdfdksajfjddalsjhdghlhadlfhlddhflksdalkfhsdkalf'
+		}
+	   */
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("serviceName", "ORDER_REFUND");
+		param.put("platformNo", platform_code);
+		
+		Map<String, Object> reqData = new HashMap<>();
+		reqData.put("requestNo", requestNo);
+		reqData.put("platformOrderNo", payOrderNo);
+		reqData.put("platformUserNo", platformUserNo);
+		reqData.put("customDefine", "AGGPAY");
+		reqData.put("timestamp", DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+		
+		param.put("reqData", JSONUtil.wrap(reqData, false).toString());
+		param.put("sign", signJson(JSONUtil.wrap(reqData, false).toString()));
+		
+		String json = JSONUtil.wrap(param, false).toString();
+		log.info("[orderRefundParam]:" + json);
 		return json;
 
 	}

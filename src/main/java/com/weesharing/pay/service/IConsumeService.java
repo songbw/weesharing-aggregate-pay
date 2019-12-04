@@ -15,4 +15,8 @@ public interface IConsumeService extends IService<Consume> {
 	
 	public void doPay(Consume consume);
 	
+	public String doAsynPay(Consume consume);
+	
+	public void persistConsume(Consume consume);
+	
 }
