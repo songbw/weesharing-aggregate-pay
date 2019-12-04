@@ -2,6 +2,7 @@ package com.weesharing.pay.dto.pay;
 
 import com.weesharing.pay.entity.Consume;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Getter
 public class BalancePay extends BasePayBean{
 	
+	@ApiModelProperty(value = "用户号")
 	private String openId;
 	
 	public Consume convert() {

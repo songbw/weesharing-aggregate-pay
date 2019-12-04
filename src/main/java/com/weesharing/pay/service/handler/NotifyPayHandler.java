@@ -28,7 +28,10 @@ public class NotifyPayHandler {
 	
 	public void PayNotifyService(CommonPayNotify notifyParam) {
 		Consume consume = getConsume(notifyParam.getOrderNo(), notifyParam.getPayType());
+		log.info("[支付回调][支付号]:{}, [金额]:{}", notifyParam.getOrderNo(),  notifyParam.getPayFee());
 		consume.setStatus(1);
+		consume.setTradeNo(notifyParam.getTradeNo());
+		consume.setTradeDate(notifyParam.getTradeDate());
 		consume.insertOrUpdate();
 		//继续调用同步支付渠道
 		payHandler.syncPay(notifyParam.getOrderNo(), false);

@@ -138,7 +138,7 @@ public class RefundHandler {
 			for (Consume refund : consumes) {
 				try {
 					remainTotal = remainTotal + Long.parseLong(refund.getActPayFee());
-					if(checkPayType(refund.getPayType())) {
+					if(checkRefundType(refund.getPayType())) {
 						refundService.doAsyncRefund(aggregateRefund.convert(preRefund, refund));
 						isAsync = true;
 					}else {
@@ -242,8 +242,8 @@ public class RefundHandler {
 		return refunds;
 	}
 	
-	private boolean checkPayType(String payType) {
-		 if(PayType.valueOf(payType.toUpperCase()).getWay().equals("async")) {
+	private boolean checkRefundType(String payType) {
+		 if(PayType.valueOf(payType.toUpperCase()).getRefund().equals("async")) {
 			 return true;
 		 }
 		 return false;

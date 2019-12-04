@@ -12,7 +12,6 @@ import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.feign.BeanContext;
 import com.weesharing.pay.feign.FastBankPayService;
 import com.weesharing.pay.feign.param.BankConsumeData;
-import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
 import com.weesharing.pay.service.IPaySyncService;
@@ -53,20 +52,7 @@ public class BankPayServiceImpl implements IPaySyncService {
 	
 	@Override
 	public void doRefund(Refund refund) {
-		// 调用快捷支付
-		BankRefundData trd = new BankRefundData(refund);
-		CommonResult2<String> commonResult = BeanContext.getBean(FastBankPayService.class).refund(trd);
-		log.info("请求快捷支付退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
-		if (commonResult.getCode() == 200) {
-			refund.setRefundNo(commonResult.getData());
-			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
-			refund.setStatus(1);
-			refund.insertOrUpdate();
-		} else if (commonResult.getCode() != 200) {
-			refund.setStatus(2);
-			refund.insertOrUpdate();
-			throw new ServiceException(commonResult.getMsg());
-		}
+		throw new ServiceException("[同步退款]:不支持此退款方式");
 	}
 
 }

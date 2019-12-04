@@ -10,7 +10,7 @@ public class CommonRefundNotify {
 	private String payType;
 	private String refundNo;
 	private String orderNo;
-	private String payFee;
+	private String refundFee;
 	private String tradeNo;
 	private String tradeDate;
 

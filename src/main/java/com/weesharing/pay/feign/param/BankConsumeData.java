@@ -37,7 +37,8 @@ public class BankConsumeData {
 		this.tranAmt = new BigDecimal(pay.getActPayFee()).divide(BigDecimal.valueOf(100)).setScale(2,BigDecimal.ROUND_HALF_EVEN);
 		this.accountType = pay.getAccountType();
 		this.verifyCode = pay.getVerifyCode();
-		this.orderId = consume.getOutTradeNo();
+//		this.orderId = consume.getOutTradeNo();
+		this.orderId = consume.getOrderNo();
 		
 		this.authId = auth.getId();
 		this.custId = auth.getCustId();

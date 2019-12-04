@@ -64,7 +64,8 @@ public class PayHandler {
 		//设置支付订单为处理中的状态
 		redisService.set("pay_process:" + pay.getOrderNo(), pay.getOrderNo(), 30);
 		//判断总金额支付正确
-		if(checkPayFee(preConsume, pay) == 1) {
+		int checkResult = checkPayFee(preConsume, pay);
+		if(checkResult == 1) {
 			//金额正确进行异步支付
 			String asyncPayType = redisService.get("paytype:" + pay.getOrderNo());
 			if(asyncPayType != null){
@@ -72,7 +73,7 @@ public class PayHandler {
 			}else {
 				syncPay(pay.getOrderNo(), true);
 			}
-		}else if(checkPayFee(preConsume, pay) == 0) {
+		}else if( checkResult == 0) {
 			//金额正确进行0元异步支付
 			syncPay(pay.getOrderNo(), false);
 		}else {
@@ -104,7 +105,7 @@ public class PayHandler {
 				if(zeroPay) {
 					try {
 						for(PayType payType: PayType.values()) {
-							if(payType.getWay().equals("sync")) {
+							if(payType.getPay().equals("sync")) {
 								for(Consume consume : getConsumeList(orderNo, payType.getName())) {
 									consumeService.doPay(consume);
 								}
@@ -186,6 +187,7 @@ public class PayHandler {
 			if(pay.getBankPay() != null) {
 				preActPayFee  = computePrePayFee(preActPayFee, pay.getBankPay().getActPayFee());
 				consumeService.persistConsume(pay.getBankPay().convert());
+				redisService.set("bank_pay:" + pay.getOrderNo(), JSONUtil.wrap(pay.getBankPay(), false).toString());
 				checkPayType(preConsume.getOrderNo(), pay.getBankPay().getPayType());
 			}
 			if(pay.getFcAlipayPay() != null) {
@@ -231,7 +233,7 @@ public class PayHandler {
 	}
 	
 	private void checkPayType(String orderNo, String payType) {
-		 if(PayType.valueOf(payType.toUpperCase()).getWay().equals("async")) {
+		 if(PayType.valueOf(payType.toUpperCase()).getPay().equals("async")) {
 			 redisService.set("paytype:" + orderNo, payType, 30 * 60);
 		 }
 	}

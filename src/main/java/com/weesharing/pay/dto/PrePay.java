@@ -23,7 +23,7 @@ import lombok.Data;
 @ApiModel(value="预支付对象", description="")
 public class PrePay {
 
-    @ApiModelProperty(value = "订单号", example = "123456")
+    @ApiModelProperty(value = "订单号", example = "w123456")
     @NotBlank(message = "订单号不能为空")
     private String outTradeNo;
 

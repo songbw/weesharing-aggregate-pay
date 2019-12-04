@@ -10,13 +10,13 @@ import com.weesharing.pay.mapper.RefundMapper;
 import com.weesharing.pay.service.IPayAsyncService;
 import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.service.IRefundService;
+import com.weesharing.pay.service.impl.async.BankPayAsyncServiceImpl;
 import com.weesharing.pay.service.impl.async.FcAliPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
-import com.weesharing.pay.service.impl.async.PingAnPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.BalancePayServiceImpl;
-import com.weesharing.pay.service.impl.sync.BankPayServiceImpl;
+import com.weesharing.pay.service.impl.sync.PingAnPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOAPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOCPayServiceImpl;
 
@@ -50,9 +50,10 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		if(refund.getPayType().equals(PayType.WOA.getName())){  
 			wsPayService = new WOAPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.BANK.getName())){  
-			wsPayService = new BankPayServiceImpl();
+		if(refund.getPayType().equals(PayType.PINGAN.getName())){  
+			wsPayService = new PingAnPaySyncServiceImpl();
 		}
+		
 		
 		if(wsPayService != null) {
 			wsPayService.doRefund(refund);
@@ -84,8 +85,8 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		if(refund.getPayType().equals(PayType.FCWXXCX.getName())){  
 			wsPayAsynService = new FcWxXcxPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.PINGAN.getName())){  
-			wsPayAsynService = new PingAnPayServiceImpl();
+		if(refund.getPayType().equals(PayType.BANK.getName())){  
+			wsPayAsynService = new BankPayAsyncServiceImpl();
 		}
 		
 		if(wsPayAsynService != null) {

@@ -1,10 +1,7 @@
 package com.weesharing.pay.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,31 +94,40 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 			log.debug("预支付订单号已支付, 预支付号:{}", success.getOrderNo());
 			throw new ServiceException("该订单已支付");
 		}
-		QueryWrapper<PreConsume> preConsumeQuery1 = new QueryWrapper<PreConsume>();
-		preConsumeQuery1.eq("out_trade_no", prePay.getOutTradeNo());
-		preConsumeQuery1.eq("act_pay_fee", prePay.getActPayFee());
-		preConsumeQuery1.eq("status", 0);
-		preConsumeQuery1.orderByDesc("create_date");
-		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery1, false);
-		if(preConsume != null) {
-			if(isExpire(preConsume.getCreateDate())) {
-				String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
-				preConsume  = prePay.convert();
-				preConsume.setOrderNo(orderNo);
-				preConsume.insert();
-				log.debug("预支付订单号已过期, 新的预支付号:{}", orderNo);
-				return new PrePayResult(orderNo, prePay.getOutTradeNo());
-			}
-			log.debug("预支付订单号已存在, 预支付号: {}", preConsume.getOrderNo());
-			return new PrePayResult(preConsume.getOrderNo(), prePay.getOutTradeNo());
-		}else {
-			String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
-			preConsume  = prePay.convert();
-			preConsume.setOrderNo(orderNo);
-			preConsume.insert();
-			log.debug("预支付订单号生成完成, 预支付号: {}", orderNo);
-			return new PrePayResult(orderNo, prePay.getOutTradeNo());
-		}
+		
+		PreConsume preConsume = new PreConsume();
+		String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
+		preConsume  = prePay.convert();
+		preConsume.setOrderNo(orderNo);
+		preConsume.insert();
+		log.debug("预支付订单号生成完成, 预支付号: {}", orderNo);
+		return new PrePayResult(orderNo, prePay.getOutTradeNo());
+		
+//		QueryWrapper<PreConsume> preConsumeQuery1 = new QueryWrapper<PreConsume>();
+//		preConsumeQuery1.eq("out_trade_no", prePay.getOutTradeNo());
+//		preConsumeQuery1.eq("act_pay_fee", prePay.getActPayFee());
+//		preConsumeQuery1.eq("status", 0);
+//		preConsumeQuery1.orderByDesc("create_date");
+//		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery1, false);
+//		if(preConsume != null) {
+//			if(isExpire(preConsume.getCreateDate())) {
+//				String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
+//				preConsume  = prePay.convert();
+//				preConsume.setOrderNo(orderNo);
+//				preConsume.insert();
+//				log.debug("预支付订单号已过期, 新的预支付号:{}", orderNo);
+//				return new PrePayResult(orderNo, prePay.getOutTradeNo());
+//			}
+//			log.debug("预支付订单号已存在, 预支付号: {}", preConsume.getOrderNo());
+//			return new PrePayResult(preConsume.getOrderNo(), prePay.getOutTradeNo());
+//		}else {
+//			String orderNo = UUID.randomUUID().toString().replaceAll("-", "");
+//			preConsume  = prePay.convert();
+//			preConsume.setOrderNo(orderNo);
+//			preConsume.insert();
+//			log.debug("预支付订单号生成完成, 预支付号: {}", orderNo);
+//			return new PrePayResult(orderNo, prePay.getOutTradeNo());
+//		}
 	}
 	
 	@Override
@@ -311,13 +317,13 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	 * @param createDate
 	 * @return
 	 */
-	private boolean isExpire(LocalDateTime createDate) {
-		Date db = Date.from(createDate.atZone(ZoneId.systemDefault()).toInstant());
-		if(db.before(DateUtil.offsetMinute(new Date(), -30))) {
-			return true;
-		}
-		return false;
-	}
+//	private boolean isExpire(LocalDateTime createDate) {
+//		Date db = Date.from(createDate.atZone(ZoneId.systemDefault()).toInstant());
+//		if(db.before(DateUtil.offsetMinute(new Date(), -30))) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	
 	

@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.weesharing.pay.dto.callback.WorkOrderCallBack;
 import com.weesharing.pay.dto.notify.CommonRefundNotify;
+import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.PreRefund;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
 import com.weesharing.pay.service.IPreRefundService;
 import com.weesharing.pay.service.IRefundService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class NotifyRefundHandler {
 
@@ -29,12 +33,7 @@ public class NotifyRefundHandler {
 	public void RefundNotifyService(CommonRefundNotify refundNotify) {
 		
 		//更新异步退款状态
-		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-		refundQuery.eq("order_no", refundNotify.getOrderNo());
-		refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
-		refundQuery.eq("pay_type", refundNotify.getPayType());
-
-		Refund refund = refundService.getOne(refundQuery);
+		Refund refund = refundService.getOne(getRefund(refundNotify));
 		if (refund == null) {
 			throw new ServiceException("该退款不存在");
 		}
@@ -42,6 +41,8 @@ public class NotifyRefundHandler {
 		if(refund.getStatus() != 0) {
 			throw new ServiceException("该退款已处理完成.");
 		}
+		
+		log.info("[退款回调][支付号]:{}, [金额]:{}", refundNotify.getOrderNo(),  refundNotify.getRefundFee());
 		
 		refund.setStatus(1);
 		refund.insertOrUpdate();
@@ -92,6 +93,21 @@ public class NotifyRefundHandler {
 		WorkOrderCallBack result = new WorkOrderCallBack(preRefund);
 		refundHandler.refundNotifyHandler(result);
 
+	}
+	
+	private QueryWrapper<Refund> getRefund(CommonRefundNotify refundNotify){
+		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
+		
+		refundQuery.eq("pay_type", refundNotify.getPayType());
+		
+		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
+			refundQuery.eq("refund_no", refundNotify.getOrderNo());
+		}else {
+			refundQuery.eq("order_no", refundNotify.getOrderNo());
+			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
+		}
+		
+		return refundQuery;
 	}
 	
 	
