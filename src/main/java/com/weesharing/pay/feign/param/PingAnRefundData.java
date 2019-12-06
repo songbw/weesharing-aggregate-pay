@@ -15,7 +15,7 @@ public class PingAnRefundData {
 	}
     
 	public PingAnRefundData(Refund refund) {
-		this.oriOrderNo = refund.getOrderNo();
+		this.oriOrderNo = refund.getTradeNo();
 		this.refundMchOrderNo = refund.getOutRefundNo();
 		this.refundAmt = Integer.parseInt(refund.getRefundFee());
 	}

@@ -34,7 +34,7 @@ public class NotifyPayHandler {
 		consume.setTradeDate(notifyParam.getTradeDate());
 		consume.insertOrUpdate();
 		//继续调用同步支付渠道
-		payHandler.syncPay(notifyParam.getOrderNo(), false);
+		payHandler.syncPay(notifyParam.getOrderNo(), true);
 	}
 	
 	private Consume getConsume(String orderNo, String payType) {

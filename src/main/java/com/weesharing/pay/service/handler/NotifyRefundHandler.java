@@ -45,7 +45,10 @@ public class NotifyRefundHandler {
 		log.info("[退款回调][支付号]:{}, [金额]:{}", refundNotify.getOrderNo(),  refundNotify.getRefundFee());
 		
 		refund.setStatus(1);
+		refund.setTradeDate(refundNotify.getTradeDate());
 		refund.insertOrUpdate();
+		
+		changeParam(refundNotify, refund);
 		
 		//通知工单
 		NotifyWorkOrder(refundNotify);
@@ -87,6 +90,7 @@ public class NotifyRefundHandler {
 		}else {
 			preRefund.setStatus(3);
 		}
+		preRefund.setTradeDate(refundNotify.getTradeDate());
 		preRefund.insertOrUpdate();
 		
 		// 回调工单
@@ -95,13 +99,31 @@ public class NotifyRefundHandler {
 
 	}
 	
+	/**
+	 * 更改回调参数
+	 * @param refundNotify
+	 * @param refund
+	 */
+	private void changeParam(CommonRefundNotify refundNotify, Refund refund) {
+		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
+			refundNotify.setOrderNo(refund.getOrderNo());
+			refundNotify.setRefundNo(refund.getOutRefundNo());
+		}else {
+		}
+		
+	}
+	
 	private QueryWrapper<Refund> getRefund(CommonRefundNotify refundNotify){
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		
 		refundQuery.eq("pay_type", refundNotify.getPayType());
 		
 		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
-			refundQuery.eq("refund_no", refundNotify.getOrderNo());
+			refundQuery.eq("refund_no", refundNotify.getRefundNo());
+		}else if(refundNotify.getPayType().equals(PayType.FCWXXCX.getName())) {
+			refundQuery.eq("refund_no", refundNotify.getTradeNo());
+			refundQuery.eq("order_no", refundNotify.getOrderNo());
+			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
 		}else {
 			refundQuery.eq("order_no", refundNotify.getOrderNo());
 			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());

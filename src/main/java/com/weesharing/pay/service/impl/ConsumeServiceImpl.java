@@ -115,7 +115,7 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		Date now = new Date();
 		QueryWrapper<PreConsume> consumeQuery = new QueryWrapper<PreConsume>();
 		consumeQuery.eq("order_no", consume.getOrderNo());
-		consumeQuery.between("create_date", DateUtil.offsetMinute(now, -30) , now);
+		consumeQuery.between("create_date", formatDate(DateUtil.offsetMinute(now, -30)) , formatDate(DateUtil.offsetMinute(now, +1)));
 		
 		PreConsume one = preConsumeService.getOne(consumeQuery);
 		if(one == null) {
@@ -127,6 +127,10 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		consume.setPayType(consume.getPayType());
 		consume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 		consume.insertOrUpdate();
+	}
+	
+	private String formatDate(Date date) {
+		return DateUtil.format(date, "yyyy-MM-dd HH:mm:ss");
 	}
 
 }

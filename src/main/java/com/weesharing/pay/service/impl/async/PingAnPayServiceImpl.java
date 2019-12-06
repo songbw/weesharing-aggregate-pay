@@ -30,7 +30,10 @@ public class PingAnPayServiceImpl implements IPayAsyncService {
 		}
 		log.info("请求平安支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			return JSONUtil.wrap(commonResult.getData().convert(consume.getOrderNo()), false).toString();
+			consume.setTradeNo(commonResult.getData().getOrderNo());
+			consume.insertOrUpdate();
+			return JSONUtil.wrap(commonResult.getData().convert(consume.getOrderNo(), consume.getCardNo()), false).toString();
+			
 		} else if(commonResult.getCode() != 200) {
 			throw new ServiceException(commonResult.getMsg());
 		}

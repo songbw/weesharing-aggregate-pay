@@ -9,10 +9,10 @@ public class PingAnResult {
     
     private String merchantNo;
     
-    public PingAnPrePay convert(String mchOrderNo) {
+    public PingAnPrePay convert(String mchOrderNo, String memberNo) {
     	PingAnPrePay pay = new PingAnPrePay();
     	pay.setMchOrderNo(mchOrderNo);
-    	pay.setPayId(this.getOrderNo());
+    	pay.setPayId(memberNo);
     	pay.setMerchantNo(this.getMerchantNo());
     	return pay;
     }
