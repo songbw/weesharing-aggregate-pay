@@ -41,6 +41,7 @@ public class PayController {
 	@PostMapping("/prepay")
 	@ApiOperation(value="申请预支付号")
 	public CommonResult<PrePayResult> prePay(@RequestBody @Valid PrePay prePay){
+		log.info("[申请预支付号]参数:{}", JSONUtil.wrap(prePay, false));
 		PrePayResult payResult = payService.prePay(prePay);
 		return CommonResult.success(payResult);
 	}
@@ -63,6 +64,7 @@ public class PayController {
 	@PostMapping("/refund")
 	@ApiOperation(value="退款")
 	public CommonResult<String> refund(@RequestBody @Valid AggregateRefund refund){
+		log.info("[退款]参数:{}", JSONUtil.wrap(refund, false));
 		try {
 			String refundNo = payService.doRefund(refund);
 			return CommonResult.success(refundNo);

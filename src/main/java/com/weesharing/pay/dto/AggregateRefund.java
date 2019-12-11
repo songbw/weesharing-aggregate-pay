@@ -6,9 +6,6 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 
-import com.weesharing.pay.dto.pay.BalancePay;
-import com.weesharing.pay.dto.pay.WOAPay;
-import com.weesharing.pay.dto.pay.WOCPay;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.entity.PreRefund;
@@ -24,6 +21,10 @@ import lombok.Data;
  */
 @Data
 public class AggregateRefund {
+	
+    @ApiModelProperty(value = "平台ID")
+    @NotBlank(message = "AppId不能为空")
+    private String appId;
 
 	@ApiModelProperty(value = "退款号")
     @NotBlank(message = "退款号不能为空")
@@ -50,6 +51,7 @@ public class AggregateRefund {
 
     public AggregateRefund(PreConsume pay) {
 		this.outRefundNo = UUID.randomUUID().toString();
+		this.appId = pay.getAppId();
 		this.orderNo = pay.getOrderNo();
 		this.merchantCode = "";
 		this.refundFee = pay.getActPayFee();
@@ -57,36 +59,10 @@ public class AggregateRefund {
 		this.notifyUrl = "";
 	}
     
-	public AggregateRefund(WOAPay woaPay) {
-		this.outRefundNo = UUID.randomUUID().toString();
-		this.orderNo = woaPay.getOrderNo();
-		this.merchantCode = "";
-		this.refundFee = woaPay.getActPayFee();
-		this.returnUrl = "";
-		this.notifyUrl = "";
-	}
-
-	public AggregateRefund(WOCPay wocPay) {
-		this.outRefundNo = UUID.randomUUID().toString();
-		this.orderNo = wocPay.getOrderNo();
-		this.merchantCode = "";
-		this.refundFee = wocPay.getActPayFee();
-		this.returnUrl = "";
-		this.notifyUrl = "";
-	}
-
-	public AggregateRefund(BalancePay balancePay) {
-		this.outRefundNo = UUID.randomUUID().toString();
-		this.orderNo = balancePay.getOrderNo();
-		this.merchantCode = "";
-		this.refundFee = balancePay.getActPayFee();
-		this.returnUrl = "";
-		this.notifyUrl = "";
-	}
-    
     public PreRefund convert() {
     	PreRefund refund = new PreRefund();
-    	refund.setOutRefundNo(this.getOutRefundNo());    
+    	refund.setOutRefundNo(this.getOutRefundNo());  
+    	refund.setAppId(this.getAppId());
     	refund.setOrderNo(this.getOrderNo());
         refund.setMerchantCode(this.getMerchantCode());    
         refund.setRefundFee(this.getRefundFee());       
@@ -112,6 +88,7 @@ public class AggregateRefund {
 		refund.setRefundFee(consume.getActPayFee());
 		refund.setCardNo(consume.getCardNo());
 		refund.setCardPwd(consume.getCardPwd());
+		refund.setAppId(consume.getAppId());
 		return refund;
 	}
     

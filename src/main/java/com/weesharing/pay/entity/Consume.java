@@ -28,6 +28,9 @@ import lombok.experimental.Accessors;
 public class Consume extends Model<Consume> {
 
     private static final long serialVersionUID=1L;
+    
+    @ApiModelProperty(value = "平台ID")
+    private String appId;
 
     @ApiModelProperty(value = "主键ID")
     @TableId(value = "id", type = IdType.AUTO)

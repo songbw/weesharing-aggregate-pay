@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.weesharing.pay.common.CommonResult2;
 import com.weesharing.pay.feign.hystric.WechatServiceH;
+import com.weesharing.pay.feign.param.JSApiConsumeData;
+import com.weesharing.pay.feign.param.JSApiRefundData;
 import com.weesharing.pay.feign.param.XCXConsumeData;
 import com.weesharing.pay.feign.param.XCXRefundData;
+import com.weesharing.pay.feign.result.JSApiPayResult;
+import com.weesharing.pay.feign.result.JSApiRefundResult;
 import com.weesharing.pay.feign.result.XCXPayResult;
 import com.weesharing.pay.feign.result.XCXRefundResult;
 
@@ -20,4 +24,10 @@ public interface WechatService {
 
     @RequestMapping(value = "/wechat/refund/mini", method = RequestMethod.POST)
     CommonResult2<XCXRefundResult> refund(@RequestBody XCXRefundData data);
+    
+    @RequestMapping(value = "/wechat/unifiedOrder/jsapi", method = RequestMethod.POST)
+    CommonResult2<JSApiPayResult> consume(@RequestBody JSApiConsumeData data);
+
+    @RequestMapping(value = "/wechat/refund/jsapi", method = RequestMethod.POST)
+    CommonResult2<JSApiRefundResult> refund(@RequestBody JSApiRefundData data);
 }

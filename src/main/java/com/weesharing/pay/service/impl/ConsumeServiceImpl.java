@@ -123,6 +123,7 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		}else if(one.getStatus() != 0){
 			throw new ServiceException("该支付交易已处理过,请重新申请支付订单号");
 		}
+		consume.setAppId(one.getAppId());
 		consume.setOutTradeNo(one.getOutTradeNo());
 		consume.setPayType(consume.getPayType());
 		consume.setCreateDate(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());

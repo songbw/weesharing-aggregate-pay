@@ -26,6 +26,10 @@ public class PrePay {
     @ApiModelProperty(value = "订单号", example = "w123456")
     @NotBlank(message = "订单号不能为空")
     private String outTradeNo;
+    
+    @ApiModelProperty(value = "平台ID")
+    @NotBlank(message = "AppId不能为空")
+    private String appId;
 
     @ApiModelProperty(value = "商品描述", example = "测试订单")
     @NotBlank(message = "商品描述不能为空")
@@ -53,6 +57,7 @@ public class PrePay {
     
     public PreConsume convert() {
     	PreConsume preConsume = new PreConsume();
+    	preConsume.setAppId(this.getAppId());
     	preConsume.setOutTradeNo(this.getOutTradeNo());
     	preConsume.setBody(this.getBody());
     	preConsume.setRemark(this.getRemark());

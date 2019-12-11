@@ -77,6 +77,7 @@ public class PayHandler {
 			//金额正确进行0元异步支付
 			syncPay(pay.getOrderNo(), false);
 		}else {
+			redisService.remove("pay_process:" + pay.getOrderNo());
 			throw new ServiceException("支付失败, 请核对支付金额");
 		}
 		return null;

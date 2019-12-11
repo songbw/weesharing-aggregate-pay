@@ -24,6 +24,10 @@ public class AggregatePay {
 	@NotBlank(message = "支付订单号不能为空")
 	private String orderNo;
 	
+	@ApiModelProperty(value = "平台ID")
+    @NotBlank(message = "AppId不能为空")
+    private String appId;
+	
 	//余额支付
 	private BalancePay balancePay;
 	

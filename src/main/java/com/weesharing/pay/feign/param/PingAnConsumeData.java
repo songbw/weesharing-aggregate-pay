@@ -11,6 +11,7 @@ public class PingAnConsumeData {
     private String mchOrderNo;
     private Integer amount;
     private String memberNo ;
+    private String appId;
     
     public PingAnConsumeData() {
 	}
@@ -20,6 +21,7 @@ public class PingAnConsumeData {
 		this.mchOrderNo = consume.getOrderNo();
 		this.amount = Integer.parseInt(consume.getActPayFee());
 		this.goodsName = "下单支付";
+		this.appId = consume.getAppId();
 	}
 
 }

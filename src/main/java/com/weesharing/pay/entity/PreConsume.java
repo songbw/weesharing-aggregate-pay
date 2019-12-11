@@ -32,6 +32,9 @@ public class PreConsume extends Model<PreConsume> {
     @ApiModelProperty(value = "主键ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    
+    @ApiModelProperty(value = "平台ID")
+    private String appId;
 
     @ApiModelProperty(value = "支付方式")
     private String payType;
