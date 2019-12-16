@@ -52,7 +52,7 @@ public class PrePay {
     private String returnUrl;
 
     @ApiModelProperty(value = "异步通知地址")
-    @NotBlank(message = "异步通知地址不能为空")
+//    @NotBlank(message = "异步通知地址不能为空")
     private String notifyUrl;
     
     public PreConsume convert() {

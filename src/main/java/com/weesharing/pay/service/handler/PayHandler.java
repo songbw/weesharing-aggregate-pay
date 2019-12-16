@@ -19,6 +19,8 @@ import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.PreConsume;
 import com.weesharing.pay.exception.ServiceException;
+import com.weesharing.pay.feign.BeanContext;
+import com.weesharing.pay.feign.SSOService;
 import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.RedisService;
@@ -131,8 +133,8 @@ public class PayHandler {
 				preConsume.insertOrUpdate();
 
 				//回调
-				payNotifyHandler(preConsume.getNotifyUrl(), JSONUtil.wrap(new OrderCallBack(new OrderCallBackData(preConsume)), false).toString());
-				
+//				payNotifyHandler(preConsume.getNotifyUrl(), JSONUtil.wrap(new OrderCallBack(new OrderCallBackData(preConsume)), false).toString());
+				payNotifyHandler(new OrderCallBack(new OrderCallBackData(preConsume)));
 			}});
 	}
 	
@@ -141,16 +143,28 @@ public class PayHandler {
 	 * @param notifyUrl
 	 * @param json
 	 */
-	private void payNotifyHandler(String notifyUrl, String json) {
+	public void payNotifyHandler(OrderCallBack bean) {
 		log.info("支付成功, 准备回调...");
-		log.info("回调地址:{}, 参数: {}", notifyUrl, json);
+		log.info("回调地址:{}, 参数: {}", "Feign回调", JSONUtil.wrap(bean, false));
+		
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				HttpUtil.post(notifyUrl, json);
+				BeanContext.getBean(SSOService.class).pinganPosBack(bean);
 			}
 		});
 	}
+	
+//	private void payNotifyHandler(String notifyUrl, String json) {
+//		log.info("支付成功, 准备回调...");
+//		log.info("回调地址:{}, 参数: {}", notifyUrl, json);
+//		executor.submit(new Runnable(){
+//			@Override
+//			public void run() {
+//				HttpUtil.post(notifyUrl, json);
+//			}
+//		});
+//	}
 	
 	/**
 	 * 判断支付金额和预支付金额是否一致
