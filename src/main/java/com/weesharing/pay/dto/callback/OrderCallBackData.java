@@ -27,6 +27,8 @@ public class OrderCallBackData {
     // 1支付，2充值，3退款，4提现
     private int orderCategory ;
     
+    private String appId;
+    
     public OrderCallBackData(PreConsume consume) {
 		this.payType    = consume.getPayType();
 		this.orderNo    = consume.getOrderNo();
@@ -36,6 +38,7 @@ public class OrderCallBackData {
 		this.payer      = "";
 		this.payee      = "";
 		this.refundFee  = 0;
+		this.appId      = consume.getAppId();
 		this.orderCategory = 1;
 		if(consume.getStatus() == 1) {
 			this.payStatus = 5;

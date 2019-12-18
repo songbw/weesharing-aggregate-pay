@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class JSApiConsumeData {
 
+	private String iAppId;
 	private String body;
 	private String openId;
 	private Integer totalFee;
@@ -20,6 +21,7 @@ public class JSApiConsumeData {
 		this.openId = consume.getCardNo();
 		this.totalFee = Integer.parseInt(consume.getActPayFee());
 		this.tradeNo = consume.getOrderNo();
+		this.iAppId = consume.getAppId();
 	}
 	
 }

@@ -22,8 +22,8 @@ import lombok.Data;
 @Data
 public class AggregateRefund {
 	
-    @ApiModelProperty(value = "平台ID")
-    @NotBlank(message = "AppId不能为空")
+//    @ApiModelProperty(value = "平台ID")
+//    @NotBlank(message = "AppId不能为空")
     private String appId;
 
 	@ApiModelProperty(value = "退款号")
