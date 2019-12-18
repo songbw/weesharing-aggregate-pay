@@ -14,6 +14,7 @@ import com.weesharing.pay.dto.AggregatePay;
 import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.callback.OrderCallBack;
 import com.weesharing.pay.dto.callback.OrderCallBackData;
+import com.weesharing.pay.dto.pay.BalancePay;
 import com.weesharing.pay.dto.pay.WOCPay;
 import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Consume;
@@ -26,7 +27,6 @@ import com.weesharing.pay.service.IPreConsumeService;
 import com.weesharing.pay.service.RedisService;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -182,9 +182,11 @@ public class PayHandler {
 			//持久化消费记录
 			//检查是否异步支付
 			if(pay.getBalancePay() != null) {
-				preActPayFee  = computePrePayFee(preActPayFee , pay.getBalancePay().getActPayFee());
-				consumeService.persistConsume(pay.getBalancePay().convert());
-				checkPayType(preConsume.getOrderNo(), pay.getBalancePay().getPayType());
+				for(BalancePay balancePay: pay.getBalancePay()) {
+					preActPayFee  = computePrePayFee(preActPayFee ,balancePay.getActPayFee());
+					consumeService.persistConsume(balancePay.convert());
+					checkPayType(preConsume.getOrderNo(), balancePay.getPayType());
+				}
 				
 			}
 			if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {

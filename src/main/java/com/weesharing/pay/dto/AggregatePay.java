@@ -29,7 +29,7 @@ public class AggregatePay {
     private String appId;
 	
 	//余额支付
-	private BalancePay balancePay;
+	private List<BalancePay> balancePay;
 	
 	//联机账户支付
 	private WOAPay woaPay;
