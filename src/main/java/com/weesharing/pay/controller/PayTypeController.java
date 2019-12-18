@@ -53,8 +53,8 @@ public class PayTypeController {
 	
 	@DeleteMapping("/del")
 	@ApiOperation(value = "删除AppID的支付方式")
-	public CommonResult<String> delPayTypeToAppID(@RequestBody @Valid PayTypeParam payTypes) {
-		payTypeService.delPayTypeByAppId(payTypes.getMutilPayTypes());
+	public CommonResult<String> delPayTypeToAppID(String ids) {
+		payTypeService.delPayTypeByAppId(ids);
 		return CommonResult.success();
 	}
 	

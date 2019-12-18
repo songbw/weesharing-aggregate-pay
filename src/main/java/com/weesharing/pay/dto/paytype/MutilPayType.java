@@ -2,6 +2,8 @@ package com.weesharing.pay.dto.paytype;
 
 import javax.validation.constraints.NotNull;
 
+import com.weesharing.pay.entity.PayTypeEntity;
+
 import lombok.Data;
 
 @Data
@@ -14,5 +16,13 @@ public class MutilPayType {
 	private String name;
 	
 	private String desc;
+	
+	public PayTypeEntity convert() {
+		PayTypeEntity entity = new PayTypeEntity();
+		entity.setAppid(this.appid);
+		entity.setName(this.name);
+		entity.setDescription(this.desc);
+		return entity;
+	}
 
 }
