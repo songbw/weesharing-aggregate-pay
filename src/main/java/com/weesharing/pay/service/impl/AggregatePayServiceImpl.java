@@ -274,6 +274,9 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 		if(StringUtils.isNotEmpty(request.getCardNo())) {
 			wrapper.eq("card_no", request.getCardNo());
 		}
+		if(StringUtils.isNotEmpty(request.getAppId())) {
+			wrapper.eq("app_id", request.getAppId());
+		}
 		if(StringUtils.isNotEmpty(request.getStartDate())  &&  StringUtils.isNotEmpty(request.getEndDate())) {
 			wrapper.ge("create_date", request.getStartDate());
 			wrapper.lt("create_date", request.getEndDate());

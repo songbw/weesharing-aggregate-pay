@@ -16,6 +16,9 @@ import lombok.Data;
 @ApiModel(value="查询消费和退款对象", description="")
 public class QueryConsumeRefundRequest {
 	
+	@ApiModelProperty(value = "平台ID", example = "11")
+	private String appId;
+	
 	@ApiModelProperty(value = "支付方式", example = "balance", notes="balance, card, woa")
 	private String payType;
 
