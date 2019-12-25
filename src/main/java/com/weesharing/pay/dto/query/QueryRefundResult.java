@@ -2,7 +2,6 @@ package com.weesharing.pay.dto.query;
 
 import java.time.LocalDateTime;
 
-import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.entity.Refund;
 
 import io.swagger.annotations.ApiModel;
@@ -57,7 +56,7 @@ public class QueryRefundResult {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createDate;
 	
-	public QueryRefundResult(Refund refund, String bankStatusResult) {
+	public QueryRefundResult(Refund refund) {
 		this.payType          = refund.getPayType();
 		this.outRefundNo      = refund.getOutRefundNo();
 		this.sourceOutTradeNo = refund.getSourceOutTradeNo();
@@ -70,18 +69,14 @@ public class QueryRefundResult {
 		this.tradeDate        = refund.getTradeDate();
 		this.createDate       = refund.getCreateDate();
 		
-		if(refund.getPayType().equals(PayType.BANK.getName())) {
-			this.statusMsg = bankStatusResult;
+		if(status == 0) {
+			this.statusMsg = "未处理或处理中";
+		}else if(status == 1) {
+			this.statusMsg = "退款成功";
+		}else if(status == 2) {
+			this.statusMsg = "退款失败";
 		}else {
-			if(status == 0) {
-				this.statusMsg = "未处理";
-			}else if(status == 1) {
-				this.statusMsg = "退款成功";
-			}else if(status == 2) {
-				this.statusMsg = "退款失败";
-			}else {
-				this.statusMsg = "退款超时或异常";
-			}
+			this.statusMsg = "退款超时或异常";
 		}
 	}
 

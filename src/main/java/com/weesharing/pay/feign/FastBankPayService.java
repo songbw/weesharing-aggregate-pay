@@ -13,6 +13,7 @@ import com.weesharing.pay.feign.param.BankConsumeData;
 import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
+import com.weesharing.pay.feign.result.ZTKXCAS008ResponseBean;
 
 @FeignClient(value = "cardPayment", fallbackFactory = FastBankPayServiceH.class)
 public interface FastBankPayService {
@@ -27,6 +28,6 @@ public interface FastBankPayService {
 	CommonResult2<String> refund(BankRefundData trd);
     
     @RequestMapping(value = "/ztkx/refund/status", method = RequestMethod.GET)
-	CommonResult2<String> refundStatus(@RequestParam("tranFlow") String tranFlow);
+	CommonResult2<ZTKXCAS008ResponseBean> refundStatus(@RequestParam("tranFlow") String tranFlow);
     
 }

@@ -9,6 +9,7 @@ import com.weesharing.pay.feign.param.BankConsumeData;
 import com.weesharing.pay.feign.param.BankRefundData;
 import com.weesharing.pay.feign.result.BankAuthResult;
 import com.weesharing.pay.feign.result.BankConsumeResult;
+import com.weesharing.pay.feign.result.ZTKXCAS008ResponseBean;
 
 import cn.hutool.json.JSONUtil;
 import feign.hystrix.FallbackFactory;
@@ -41,7 +42,7 @@ public class FastBankPayServiceH implements FallbackFactory<FastBankPayService> 
 			}
 
 			@Override
-			public CommonResult2<String> refundStatus(String tranFlow) {
+			public CommonResult2<ZTKXCAS008ResponseBean> refundStatus(String tranFlow) {
 				log.info("快捷支付退款查询失败, 参数:{}", JSONUtil.wrap(tranFlow, false));
 				return CommonResult2.failed(cause.getMessage());
 			}

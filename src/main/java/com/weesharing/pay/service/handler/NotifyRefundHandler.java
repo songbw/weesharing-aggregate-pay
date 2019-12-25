@@ -51,14 +51,14 @@ public class NotifyRefundHandler {
 		changeParam(refundNotify, refund);
 		
 		//通知工单
-		NotifyWorkOrder(refundNotify);
+		notifyWorkOrder(refundNotify);
 	}
 
 	/**
 	 * 更新退款状态并回调工单系统
 	 * @param orderNo
 	 */
-	private void NotifyWorkOrder(CommonRefundNotify refundNotify) {
+	private void notifyWorkOrder(CommonRefundNotify refundNotify) {
 		//查询预退款请求
 		QueryWrapper<PreRefund> preRefundQuery = new QueryWrapper<PreRefund>();
 		preRefundQuery.eq("order_no", refundNotify.getOrderNo());
@@ -108,7 +108,6 @@ public class NotifyRefundHandler {
 		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
 			refundNotify.setOrderNo(refund.getOrderNo());
 			refundNotify.setRefundNo(refund.getOutRefundNo());
-		}else {
 		}
 		
 	}

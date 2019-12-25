@@ -21,7 +21,6 @@ import com.weesharing.pay.dto.AggregateRefund;
 import com.weesharing.pay.dto.PrePay;
 import com.weesharing.pay.dto.PrePayResult;
 import com.weesharing.pay.dto.pay.BankAuthBean;
-import com.weesharing.pay.dto.paytype.PayType;
 import com.weesharing.pay.dto.query.QueryConsumeRefundRequest;
 import com.weesharing.pay.dto.query.QueryConsumeRefundResult;
 import com.weesharing.pay.dto.query.QueryConsumeResult;
@@ -217,15 +216,7 @@ public class AggregatePayServiceImpl implements AggregatePayService{
 	private List<QueryRefundResult> getQueryRefundResult(List<Refund> refunds){
 		List<QueryRefundResult> results = new ArrayList<QueryRefundResult>();
 		for(Refund refund: refunds) {
-			String bankStatusResult = "退款查询异常";
-			if(refund.getPayType().equals(PayType.BANK.getName()) && StringUtils.isNotEmpty(refund.getRefundNo())) {
-				CommonResult2<String> bankResult = fastBankPayService.refundStatus(refund.getRefundNo());
-				log.info(JSONUtil.wrap(bankResult, false).toString());
-				if(bankResult != null) {
-					bankStatusResult = bankResult.getMsg();
-				}
-			}
-			results.add(new QueryRefundResult(refund,  bankStatusResult));
+			results.add(new QueryRefundResult(refund));
 		}
 		return results;
 	}
