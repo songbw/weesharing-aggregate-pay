@@ -13,7 +13,7 @@ public enum PayType {
 	BANK    ("bank",     "中投快捷支付",         "sync" , "async" ),           
 	PINGAN  ("pingan",   "惠民商城平安统一支付", "async",  "sync"  ),       
 	FCWXH5  ("fcwxh5",   "凤巢微信H5支付",       "async", "async" ),      
-	FCALIPAY("fcalipay", "凤巢支付宝H5支付",     "async", "async" ),
+	FCALIPAY("fcalipay", "凤巢支付宝H5支付",     "async", "sync" ),
 	FCWX    ("fcwx",     "凤巢微信公众号支付",   "async", "async" ),
 	FCWXXCX ("fcwxxcx",  "凤巢微信小程序支付",   "async", "async" );
 	

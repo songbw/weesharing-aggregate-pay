@@ -11,11 +11,11 @@ import com.weesharing.pay.service.IPayAsyncService;
 import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.service.IRefundService;
 import com.weesharing.pay.service.impl.async.BankPayAsyncServiceImpl;
-import com.weesharing.pay.service.impl.async.FcAliPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.BalancePayServiceImpl;
+import com.weesharing.pay.service.impl.sync.FcAliPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.PingAnPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOAPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOCPayServiceImpl;
@@ -53,7 +53,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		if(refund.getPayType().equals(PayType.PINGAN.getName())){  
 			wsPayService = new PingAnPaySyncServiceImpl();
 		}
-		
+		if(refund.getPayType().equals(PayType.FCALIPAY.getName())){  
+			wsPayService = new FcAliPaySyncServiceImpl();
+		}
 		
 		if(wsPayService != null) {
 			wsPayService.doRefund(refund);
@@ -73,9 +75,6 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		//记录退款记录
 		refund.insert();
 		
-		if(refund.getPayType().equals(PayType.FCALIPAY.getName())){  
-			wsPayAsynService = new FcAliPayServiceImpl();
-		}
 		if(refund.getPayType().equals(PayType.FCWX.getName())){  
 			wsPayAsynService = new FcWxPayServiceImpl();
 		}
