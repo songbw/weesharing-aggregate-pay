@@ -10,6 +10,7 @@ import lombok.Setter;
 public class FcAlipayPay extends BasePayBean{
 	
 	private String body;
+	private String returnUrl;
 
 	public Consume convert() {
 		Consume consume  = new Consume();
@@ -17,6 +18,7 @@ public class FcAlipayPay extends BasePayBean{
 		consume.setPayType(this.getPayType());
 		consume.setOrderNo(this.getOrderNo());
 		consume.setActPayFee(this.getActPayFee());
+		consume.setReturnUrl(this.getReturnUrl());
 		return consume;
 	}
 	

@@ -11,6 +11,7 @@ public class AlipayConsumeData {
 	private String subject;
 	private Integer totalAmount;
 	private String tradeNo;
+	private String returnUrl;
 	
 	public AlipayConsumeData() {
 	}
@@ -20,6 +21,7 @@ public class AlipayConsumeData {
 		this.totalAmount = Integer.parseInt(consume.getActPayFee());
 		this.tradeNo = consume.getOrderNo();
 		this.iAppId = consume.getAppId();
+		this.returnUrl = consume.getReturnUrl();
 	}
 	
 }
