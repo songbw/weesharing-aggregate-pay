@@ -45,7 +45,7 @@ public class WechatServiceH implements WechatService {
 	}
 
 	@Override
-	public CommonResult2<?> refund(AlipayRefundData data) {
+	public CommonResult2<AlipayRefundResult> refund(AlipayRefundData data) {
 		return CommonResult2.failed("支付宝退款失败");
 	}
 

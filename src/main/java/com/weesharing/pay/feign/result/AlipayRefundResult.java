@@ -5,7 +5,12 @@ import lombok.Data;
 @Data
 public class AlipayRefundResult {
 	
-	private Integer refundFee;
+	private String refundFee;
 	private String refundNo;
+	private String tradeNo;
+	private String aliPayTradeNo;
+	private String refundDate;
+	private String aliPayLoginId;
+	private String buyerId;
 	
 }
