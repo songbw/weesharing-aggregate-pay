@@ -31,11 +31,11 @@ public class FcAliPaySyncServiceImpl implements IPaySyncService {
 	@Override
 	public void doRefund(Refund refund) {
 		AlipayRefundData  trd = new AlipayRefundData(refund);
-		CommonResult2<AlipayRefundResult> commonResult = BeanContext.getBean(WechatService.class).refund(trd);
-		log.info("请求平安退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
+		CommonResult2<?> commonResult = BeanContext.getBean(WechatService.class).refund(trd);
+		log.info("请求支付宝退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
-			refund.setTradeNo(commonResult.getData().getRefundNo());
+//			refund.setTradeNo(commonResult.getData().getRefundNo());
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() != 200) {

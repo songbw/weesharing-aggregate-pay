@@ -38,5 +38,5 @@ public interface WechatService {
     CommonResult2<String> consume(@RequestBody AlipayConsumeData data);
 
     @RequestMapping(value = "/aliPay/refund", method = RequestMethod.POST)
-    CommonResult2<AlipayRefundResult> refund(@RequestBody AlipayRefundData data);
+    CommonResult2<?> refund(@RequestBody AlipayRefundData data);
 }
