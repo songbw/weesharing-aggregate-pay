@@ -36,6 +36,9 @@ public class QueryConsumeRefundResult {
     @ApiModelProperty(value = "卡号或OpenID")
     private String cardNo;
     
+    @ApiModelProperty(value = "流水号")
+    private String tradeNo;
+    
     @ApiModelProperty(value = "交易类型", example = "consume", notes = "consume, refund")
     private String tradeType;
 
@@ -62,6 +65,7 @@ public class QueryConsumeRefundResult {
 		this.tradeDate  = consume.getTradeDate();
 		this.createDate = consume.getCreateDate();
 		this.outTradeNo = consume.getOutTradeNo();
+		this.tradeNo    = consume.getTradeNo();
 	}
 	
 	public QueryConsumeRefundResult(Refund refund) {
@@ -75,5 +79,6 @@ public class QueryConsumeRefundResult {
 		this.status     = refund.getStatus();
 		this.tradeDate  = refund.getTradeDate();
 		this.createDate = refund.getCreateDate();
+		this.tradeNo    = refund.getTradeNo();
 	}
 }
