@@ -119,10 +119,10 @@ public class NotifyRefundHandler {
 		
 		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
 			refundQuery.eq("refund_no", refundNotify.getRefundNo());
-		}else if(refundNotify.getPayType().equals(PayType.FCWXXCX.getName())) {
-			refundQuery.eq("refund_no", refundNotify.getTradeNo());
-			refundQuery.eq("order_no", refundNotify.getOrderNo());
-			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
+//		}else if(refundNotify.getPayType().equals(PayType.FCWXXCX.getName())) {
+//			refundQuery.eq("refund_no", refundNotify.getTradeNo());
+//			refundQuery.eq("order_no", refundNotify.getOrderNo());
+//			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
 		}else {
 			refundQuery.eq("order_no", refundNotify.getOrderNo());
 			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
