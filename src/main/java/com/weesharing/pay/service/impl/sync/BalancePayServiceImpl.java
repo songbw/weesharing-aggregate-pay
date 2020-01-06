@@ -29,7 +29,7 @@ public class BalancePayServiceImpl implements IPaySyncService{
 	@Override
 	public void doPay(Consume consume) {
 		BalanceConsumeData tcd = new BalanceConsumeData(consume);
-		CommonResult2<?> commonResult = null;
+		CommonResult2<BalanceDetail> commonResult = null;
 		try {
 			commonResult = BeanContext.getBean(SSOService.class).consume(tcd);
 		}catch(Exception e) {
@@ -37,7 +37,7 @@ public class BalancePayServiceImpl implements IPaySyncService{
 		}
 		log.info("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-//			consume.setPayer(commonResult.getData().getTelephone());
+			consume.setPayer(commonResult.getData().getTelephone());
 			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
 			consume.setStatus(1);
 			consume.insertOrUpdate();

@@ -1,7 +1,5 @@
 package com.weesharing.pay.feign.result;
 
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
@@ -22,9 +20,9 @@ public class BalanceDetail {
 
     private Integer status;
 
-    private Date createdAt;
+    private String createdAt;
 
-    private Date updatedAt;
+    private String updatedAt;
     
     private String telephone ;
 }

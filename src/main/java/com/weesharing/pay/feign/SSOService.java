@@ -17,7 +17,7 @@ import com.weesharing.pay.feign.result.ConsumeResult;
 public interface SSOService {
 
 	@RequestMapping(value = "/balance/consume", method = RequestMethod.PUT)
-	CommonResult2<?> consume(@RequestBody BalanceConsumeData data);
+	CommonResult2<BalanceDetail> consume(@RequestBody BalanceConsumeData data);
 
 	@RequestMapping(value = "/balance/refund", method = RequestMethod.PUT)
 	CommonResult2<BalanceDetail> refund(@RequestBody BalanceRefundData data);
