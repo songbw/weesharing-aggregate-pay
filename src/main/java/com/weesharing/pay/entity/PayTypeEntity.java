@@ -37,6 +37,7 @@ public class PayTypeEntity extends Model<PayTypeEntity>{
 	
 	public MutilPayType convert() {
 		MutilPayType entity = new MutilPayType();
+		entity.setId(this.id);
 		entity.setAppid(this.appid);
 		entity.setName(this.name);
 		entity.setDesc(this.description);
