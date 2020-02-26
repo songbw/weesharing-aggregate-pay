@@ -13,6 +13,7 @@ import com.weesharing.pay.dto.pay.FcWxXcxPay;
 import com.weesharing.pay.dto.pay.PingAnPay;
 import com.weesharing.pay.dto.pay.WOAPay;
 import com.weesharing.pay.dto.pay.WOCPay;
+import com.weesharing.pay.dto.pay.YunChengPay;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -54,5 +55,8 @@ public class AggregatePay {
 	
 	//平安统一支付
 	private PingAnPay pingAnPay;
+	
+	//云城支付
+	private YunChengPay yunChengPay;
 
 }

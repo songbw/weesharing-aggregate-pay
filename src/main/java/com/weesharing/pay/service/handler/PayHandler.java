@@ -229,6 +229,11 @@ public class PayHandler {
 				consumeService.persistConsume(pay.getPingAnPay().convert());
 				checkPayType(preConsume.getOrderNo(), pay.getPingAnPay().getPayType());
 			}
+			if(pay.getYunChengPay() != null) {
+				preActPayFee  = computePrePayFee(preActPayFee, pay.getYunChengPay().getActPayFee());
+				consumeService.persistConsume(pay.getYunChengPay().convert());
+				checkPayType(preConsume.getOrderNo(), pay.getYunChengPay().getPayType());
+			}
 			
 			if(preActPayFee == 0) {
 				return 1;

@@ -22,6 +22,7 @@ import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
 import com.weesharing.pay.service.impl.async.PingAnPayServiceImpl;
+import com.weesharing.pay.service.impl.async.YunChengPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.BalancePayServiceImpl;
 import com.weesharing.pay.service.impl.sync.BankPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOAPayServiceImpl;
@@ -85,6 +86,9 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 		
 		if(consume.getPayType().equals(PayType.FCALIPAY.getName())){  
 			wsPayAsyncService = new FcAliPayServiceImpl();
+		}
+		if(consume.getPayType().equals(PayType.YUNCHENG.getName())){ 
+			wsPayAsyncService = new YunChengPayServiceImpl();
 		}
 		if(consume.getPayType().equals(PayType.FCWX.getName())){  
 			wsPayAsyncService = new FcWxPayServiceImpl();
