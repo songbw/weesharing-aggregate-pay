@@ -14,6 +14,7 @@ import com.weesharing.pay.service.impl.async.BankPayAsyncServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
 import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
+import com.weesharing.pay.service.impl.async.YunChengPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.BalancePayServiceImpl;
 import com.weesharing.pay.service.impl.sync.FcAliPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.PingAnPaySyncServiceImpl;
@@ -86,6 +87,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		}
 		if(refund.getPayType().equals(PayType.BANK.getName())){  
 			wsPayAsynService = new BankPayAsyncServiceImpl();
+		}
+		if(refund.getPayType().equals(PayType.YUNCHENG.getName())){  
+			wsPayAsynService = new YunChengPayServiceImpl();
 		}
 		
 		if(wsPayAsynService != null) {

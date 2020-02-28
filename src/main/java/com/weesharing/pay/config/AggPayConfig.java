@@ -22,5 +22,8 @@ public class AggPayConfig
     
     /** 云城APP NotifyUrl */
     private String icloudcityNotifyUrl;
+    
+    /** 云城APP Refund NotifyUrl */
+    private String icloudcityRefundNotifyUrl;
 
 }
