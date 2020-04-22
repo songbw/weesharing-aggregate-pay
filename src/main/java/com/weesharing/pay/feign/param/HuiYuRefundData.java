@@ -1,6 +1,7 @@
 package com.weesharing.pay.feign.param;
 
 import com.weesharing.pay.entity.Refund;
+import com.weesharing.pay.utils.FeeUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,10 @@ public class HuiYuRefundData {
     private String workorderNo;
 
     public HuiYuRefundData(Refund refund){
-        this.refundAmount = refund.getRefundFee();
-        this.accountNo = refund.getCardNo();
+        this.refundAmount = FeeUtils.Fen2Yuan(refund.getRefundFee());
         this.workorderNo = refund.getOutRefundNo();
+        this.paymentNo = refund.getTradeNo();
+        this.accountNo = refund.getCardNo();
     }
 
 }

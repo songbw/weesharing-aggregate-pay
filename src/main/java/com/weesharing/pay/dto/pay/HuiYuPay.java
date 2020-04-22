@@ -13,11 +13,11 @@ public class HuiYuPay extends BasePayBean{
 
     @ApiModelProperty(value = "账户")
     @NotBlank(message = "账户")
-    private String accountNo;
+    private String cardNo;
 
     @ApiModelProperty(value = "密码")
     @NotBlank(message = "密码")
-    private String password;
+    private String cardPwd;
 
 
     public Consume convert() {
@@ -25,8 +25,8 @@ public class HuiYuPay extends BasePayBean{
         consume.setPayType(this.getPayType());
         consume.setOrderNo(this.getOrderNo());
         consume.setActPayFee(this.getActPayFee());
-        consume.setCardNo(getAccountNo());
-        consume.setCardPwd(getPassword());
+        consume.setCardNo(getCardNo());
+        consume.setCardPwd(getCardPwd());
         return consume;
     }
 

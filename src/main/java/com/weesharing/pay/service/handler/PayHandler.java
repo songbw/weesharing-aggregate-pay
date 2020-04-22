@@ -234,7 +234,11 @@ public class PayHandler {
 				consumeService.persistConsume(pay.getYunChengPay().convert());
 				checkPayType(preConsume.getOrderNo(), pay.getYunChengPay().getPayType());
 			}
-			
+			if(pay.getHuiYuPay() != null) {
+				preActPayFee  = computePrePayFee(preActPayFee, pay.getHuiYuPay().getActPayFee());
+				consumeService.persistConsume(pay.getHuiYuPay().convert());
+				checkPayType(preConsume.getOrderNo(), pay.getHuiYuPay().getPayType());
+			}
 			if(preActPayFee == 0) {
 				return 1;
 			}else {

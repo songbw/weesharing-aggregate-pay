@@ -20,6 +20,7 @@ import com.weesharing.pay.service.impl.sync.FcAliPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.PingAnPaySyncServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOAPayServiceImpl;
 import com.weesharing.pay.service.impl.sync.WOCPayServiceImpl;
+import com.weesharing.pay.service.impl.sync.HuiYuPayServiceImpl;
 
 /**
  * <p>
@@ -57,7 +58,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		if(refund.getPayType().equals(PayType.FCALIPAY.getName())){  
 			wsPayService = new FcAliPaySyncServiceImpl();
 		}
-		
+		if(refund.getPayType().equals(PayType.HUIYU.getName())){
+			wsPayService = new HuiYuPayServiceImpl();
+		}
 		if(wsPayService != null) {
 			wsPayService.doRefund(refund);
 		}else {
