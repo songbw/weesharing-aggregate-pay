@@ -19,7 +19,7 @@ import lombok.Data;
 @Data
 @ApiModel(value="消费记录对象", description="")
 public class QueryConsumeResult {
-	
+
 	@ApiModelProperty(value = "支付方式")
 	private String payType;
 
@@ -56,6 +56,9 @@ public class QueryConsumeResult {
     @ApiModelProperty(value = "支付限制")
     private String limitPay;
 
+    @ApiModelProperty(value = "卡号")
+    private String cardNo;
+
 	public QueryConsumeResult(Consume consume) {
 		this.payType    = consume.getPayType();
 		this.orderNo    = consume.getOrderNo();
@@ -69,5 +72,6 @@ public class QueryConsumeResult {
 		this.tradeDate  = consume.getTradeDate();
 		this.createDate = consume.getCreateDate();
 		this.limitPay   = consume.getLimitPay();
+		this.cardNo     = consume.getCardNo();
 	}
 }
