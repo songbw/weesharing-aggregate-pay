@@ -34,7 +34,9 @@ public class PingAnPaySyncServiceImpl implements IPaySyncService {
 		log.info("请求平安退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
-			refund.setTradeNo(commonResult.getData().getOrderNo());
+			if(null != commonResult.getData() && null != commonResult.getData().getOrderNo()) {
+				refund.setTradeNo(commonResult.getData().getOrderNo());
+			}
 			refund.setStatus(1);
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() != 200) {
