@@ -2,6 +2,7 @@ package com.weesharing.pay.service.impl.sync;
 
 import java.util.Date;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.stereotype.Service;
 
 import com.weesharing.pay.common.CommonResult2;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service(value = "bankPayService")
 public class BankPayServiceImpl implements IPaySyncService {
-	
+
 	@Override
 	public void doPay(Consume consume) {
 		// 调用快捷支付
@@ -38,7 +39,7 @@ public class BankPayServiceImpl implements IPaySyncService {
 		log.info("请求快捷支付支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getTranFlow());
-			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+			consume.setTradeDate(AggPayTradeDate.buildTradeDate());
 			consume.setStatus(1);
 			consume.insertOrUpdate();
 		} else if(commonResult.getCode() != 200) {
@@ -46,10 +47,10 @@ public class BankPayServiceImpl implements IPaySyncService {
 			consume.insertOrUpdate();
 			throw new ServiceException(commonResult.getMsg());
 		}
-		
+
 	}
-	
-	
+
+
 	@Override
 	public void doRefund(Refund refund) {
 		throw new ServiceException("[同步退款]:不支持此退款方式");

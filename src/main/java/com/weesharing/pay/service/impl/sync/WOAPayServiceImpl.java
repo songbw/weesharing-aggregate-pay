@@ -1,5 +1,6 @@
 package com.weesharing.pay.service.impl.sync;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.stereotype.Service;
 
 import com.weesharing.pay.common.CommonResult;
@@ -20,17 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service("woaPayService")
 public class WOAPayServiceImpl implements IPaySyncService{
-	
+
 	@Override
 	public void doPay(Consume consume) {
-		
+
 		// 调用联机账户
 		WOAConsumeData tcd = new WOAConsumeData(consume);
 		CommonResult<ConsumeResult> commonResult = BeanContext.getBean(WOAService.class).consume(tcd);
 		log.info("请求联机账户支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setTradeNo(commonResult.getData().getTradeNo());
-			consume.setTradeDate(commonResult.getData().getTradeDate());
+			consume.setTradeDate(AggPayTradeDate.buildTradeDate(commonResult.getData().getTradeDate()));
 			consume.setStatus(1);
 			consume.insertOrUpdate();
 		} else if(commonResult.getCode() != 200) {
@@ -38,9 +39,9 @@ public class WOAPayServiceImpl implements IPaySyncService{
 			consume.insertOrUpdate();
 			throw new ServiceException(commonResult.getMessage());
 		}
-		
+
 	}
-	
+
 	@Override
 	public void doRefund(Refund refund) {
 		// 调用联机账户
@@ -49,7 +50,7 @@ public class WOAPayServiceImpl implements IPaySyncService{
 		log.info("请求联机账户退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			refund.setRefundNo(commonResult.getData().getRefundNo());
-			refund.setTradeDate(commonResult.getData().getTradeDate());
+			refund.setTradeDate(AggPayTradeDate.buildTradeDate(commonResult.getData().getTradeDate()));
 			refund.setStatus(commonResult.getData().getStatus());
 			refund.insertOrUpdate();
 		} else if (commonResult.getCode() != 200) {

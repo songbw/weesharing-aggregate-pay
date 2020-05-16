@@ -13,6 +13,7 @@ import com.weesharing.pay.feign.param.HuiYuRefundData;
 import com.weesharing.pay.feign.result.HuiYuPayResult;
 import com.weesharing.pay.feign.result.HuiYuRefundResult;
 import com.weesharing.pay.service.IPaySyncService;
+import com.weesharing.pay.utils.AggPayTradeDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class HuiYuPayServiceImpl implements IPaySyncService {
         consume.setCardPwd("");
 
         if (200 == commonResult.getCode() && null != commonResult.getData()) {
-            consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+            consume.setTradeDate(AggPayTradeDate.buildTradeDate());
             consume.setStatus(1);
             consume.setTradeNo(commonResult.getData().getSerialNo());
             consume.insertOrUpdate();
@@ -55,7 +56,7 @@ public class HuiYuPayServiceImpl implements IPaySyncService {
         CommonResult2<HuiYuRefundResult> commonResult = BeanContext.getBean(HuiYuPayService.class).refund(refundData);
         log.info("请求惠余退款服务调用 参数: {}, 结果: {}", JSONUtil.wrap(refundData, false), JSONUtil.wrap(commonResult, false));
         if (200 == commonResult.getCode()) {
-            refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+            refund.setTradeDate(AggPayTradeDate.buildTradeDate());
             refund.setStatus(1);
             refund.insertOrUpdate();
         } else {

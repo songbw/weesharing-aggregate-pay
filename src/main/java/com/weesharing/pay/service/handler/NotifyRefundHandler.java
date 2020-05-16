@@ -2,6 +2,7 @@ package com.weesharing.pay.service.handler;
 
 import java.util.List;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class NotifyRefundHandler {
 
 	@Autowired
 	private IPreRefundService preRefundService;
-	
+
 	@Autowired
 	private IRefundService refundService;
 
@@ -31,32 +32,32 @@ public class NotifyRefundHandler {
 	private RefundHandler refundHandler;
 
 	public void RefundNotifyService(CommonRefundNotify refundNotify) {
-		
+
 		//更新异步退款状态
 		Refund refund = refundService.getOne(getRefund(refundNotify));
 		if (refund == null) {
 			throw new ServiceException("该退款不存在");
 		}
-		
+
 		if(refund.getStatus() != 0) {
 			throw new ServiceException("该退款已处理完成.");
 		}
-		
+
 		log.info("[退款回调][支付号]:{}, [金额]:{}", refundNotify.getOrderNo(),  refundNotify.getRefundFee());
-		
+
 		refund.setStatus(1);
-		refund.setTradeDate(refundNotify.getTradeDate());
+		refund.setTradeDate(AggPayTradeDate.buildTradeDate(refundNotify.getTradeDate()));
 		refund.insertOrUpdate();
-		
+
 		changeParam(refundNotify, refund);
-		
+
 		//通知工单
 		notifyWorkOrder(refundNotify);
 	}
 
 	/**
 	 * 更新退款状态并回调工单系统
-	 * @param orderNo
+	 * @param refundNotify
 	 */
 	private void notifyWorkOrder(CommonRefundNotify refundNotify) {
 		//查询预退款请求
@@ -68,7 +69,7 @@ public class NotifyRefundHandler {
 		if (preRefund == null) {
 			throw new ServiceException("该退款不存在.");
 		}
-		
+
 		//查询退款成功记录
 		int success = 0;
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
@@ -81,7 +82,7 @@ public class NotifyRefundHandler {
 				success = success + 1;
 			}
 		}
-		
+
 		//验证退款成功笔数
 		if(success == 0 ) {
 			preRefund.setStatus(2);
@@ -90,15 +91,15 @@ public class NotifyRefundHandler {
 		}else {
 			preRefund.setStatus(3);
 		}
-		preRefund.setTradeDate(refundNotify.getTradeDate());
+		preRefund.setTradeDate(AggPayTradeDate.buildTradeDate(refundNotify.getTradeDate()));
 		preRefund.insertOrUpdate();
-		
+
 		// 回调工单
 		WorkOrderCallBack result = new WorkOrderCallBack(preRefund);
 		refundHandler.refundNotifyHandler(result);
 
 	}
-	
+
 	/**
 	 * 更改回调参数
 	 * @param refundNotify
@@ -109,14 +110,14 @@ public class NotifyRefundHandler {
 			refundNotify.setOrderNo(refund.getOrderNo());
 			refundNotify.setRefundNo(refund.getOutRefundNo());
 		}
-		
+
 	}
-	
+
 	private QueryWrapper<Refund> getRefund(CommonRefundNotify refundNotify){
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
-		
+
 		refundQuery.eq("pay_type", refundNotify.getPayType());
-		
+
 		if(refundNotify.getPayType().equals(PayType.BANK.getName())) {
 			refundQuery.eq("refund_no", refundNotify.getRefundNo());
 //		}else if(refundNotify.getPayType().equals(PayType.FCWXXCX.getName())) {
@@ -127,10 +128,10 @@ public class NotifyRefundHandler {
 			refundQuery.eq("order_no", refundNotify.getOrderNo());
 			refundQuery.eq("out_refund_no", refundNotify.getRefundNo());
 		}
-		
+
 		return refundQuery;
 	}
-	
-	
+
+
 
 }

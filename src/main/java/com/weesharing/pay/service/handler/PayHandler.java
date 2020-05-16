@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,21 +33,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class PayHandler {
-	
+
 	@Autowired
 	private IConsumeService consumeService;
-	
+
 	@Autowired
 	private IPreConsumeService preConsumeService;
-	
+
 	@Autowired
 	private RedisService redisService;
-	
+
 	@Autowired
 	private RefundHandler refundHandler;
-	
+
 	private ExecutorService executor = Executors.newCachedThreadPool() ;
-	
+
 	/**
 	 *  1. 检查预支付信息是否存在
 	 * 	1. 与预支付信息进行对比总金额是否正确
@@ -83,7 +84,7 @@ public class PayHandler {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 异步支付
 	 * @param orderNo
@@ -93,7 +94,7 @@ public class PayHandler {
 	public String asyncPay(String orderNo, String payType) {
 		return consumeService.doAsynPay(getConsume(orderNo, payType));
 	}
-	
+
 	/**
 	 * 同步支付
 	 * @param orderNo
@@ -128,7 +129,7 @@ public class PayHandler {
 					preConsume.setStatus(1);
 					log.info("聚合0元支付成功");
 				}
-				preConsume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+				preConsume.setTradeDate(AggPayTradeDate.buildTradeDate());
 				preConsume.insertOrUpdate();
 
 				//回调
@@ -136,16 +137,15 @@ public class PayHandler {
 				payNotifyHandler(new OrderCallBack(new OrderCallBackData(preConsume)));
 			}});
 	}
-	
+
 	/**
 	 * 支付回调函数
-	 * @param notifyUrl
-	 * @param json
+	 * @param bean
 	 */
 	public void payNotifyHandler(OrderCallBack bean) {
 		log.info("支付成功, 准备回调...");
 		log.info("回调地址:{}, 参数: {}", "Feign回调", JSONUtil.wrap(bean, false));
-		
+
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
@@ -153,7 +153,7 @@ public class PayHandler {
 			}
 		});
 	}
-	
+
 //	private void payNotifyHandler(String notifyUrl, String json) {
 //		log.info("支付成功, 准备回调...");
 //		log.info("回调地址:{}, 参数: {}", notifyUrl, json);
@@ -164,7 +164,7 @@ public class PayHandler {
 //			}
 //		});
 //	}
-	
+
 	/**
 	 * 判断支付金额和预支付金额是否一致
 	 * @param preConsume
@@ -172,7 +172,7 @@ public class PayHandler {
 	 * @return 1: 一致, 0: 一致,但是0元支付, 2: 不一致
 	 */
 	private int checkPayFee(PreConsume preConsume, AggregatePay pay) {
-		
+
 		Integer preActPayFee = Integer.parseInt(preConsume.getActPayFee());
 		if(preActPayFee == 0) {
 			return 0;
@@ -184,7 +184,7 @@ public class PayHandler {
 				preActPayFee  = computePrePayFee(preActPayFee , pay.getBalancePay().getActPayFee());
 				consumeService.persistConsume(pay.getBalancePay().convert());
 				checkPayType(preConsume.getOrderNo(), pay.getBalancePay().getPayType());
-				
+
 			}
 			if(pay.getWocPays()!=null && pay.getWocPays().size() >0) {
 				for(WOCPay wocPay : pay.getWocPays()){
@@ -246,7 +246,7 @@ public class PayHandler {
 			}
 		}
 	}
-	
+
 	private Integer computePrePayFee(Integer preActPayFee, String payFee) {
 		try {
 			return preActPayFee - Integer.parseInt(payFee);
@@ -254,13 +254,13 @@ public class PayHandler {
 			throw new ServiceException("金额参数有误");
 		}
 	}
-	
+
 	private void checkPayType(String orderNo, String payType) {
 		 if(PayType.valueOf(payType.toUpperCase()).getPay().equals("async")) {
 			 redisService.set("paytype:" + orderNo, payType, 30 * 60);
 		 }
 	}
-	
+
 	private PreConsume getPreConsume(String orderNo) {
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", orderNo);
@@ -272,7 +272,7 @@ public class PayHandler {
 		}
 		return preConsume;
 	}
-	
+
 	private Consume getConsume(String orderNo, String payType) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.eq("order_no", orderNo);
@@ -284,7 +284,7 @@ public class PayHandler {
 		}
 		return consume;
 	}
-	
+
 	private List<Consume> getConsumeList(String orderNo, String payType) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.eq("order_no", orderNo);

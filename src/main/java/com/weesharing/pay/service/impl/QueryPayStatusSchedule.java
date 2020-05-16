@@ -3,6 +3,7 @@ package com.weesharing.pay.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,23 +28,23 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class QueryPayStatusSchedule {
-	
+
 	@Autowired
 	private IPreRefundService preRefundService;
-	
+
 	@Autowired
 	private IRefundService refundService;
 
 	@Autowired
 	private RefundHandler refundHandler;
-	
+
 	@Autowired
 	private FastBankPayService fastBankPayService;
-	
+
 	@Scheduled(cron="0 3 * * * ?")
 //	@Scheduled(cron="*/5 * * * * ?")
 	public void queryService() {
-		
+
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		refundQuery.eq("pay_type", PayType.BANK.getName());
 		refundQuery.eq("status", 0);
@@ -54,13 +55,13 @@ public class QueryPayStatusSchedule {
 			int status = getBankStatus(bean);
 			if(status > 0) {
 				refund.setStatus(1);
-				refund.setTradeDate(bean.getFinishTime());
+				refund.setTradeDate(AggPayTradeDate.buildTradeDate(bean.getFinishTime()));
 				refund.insertOrUpdate();
 				callback(refund.getOrderNo(), refund.getOutRefundNo());
 			}
 		}
 	}
-	
+
 	private void callback(String orderNo, String outRefundNo) {
 		//查询预退款请求
 		QueryWrapper<PreRefund> preRefundQuery = new QueryWrapper<PreRefund>();
@@ -71,7 +72,7 @@ public class QueryPayStatusSchedule {
 		if (preRefund == null) {
 			throw new ServiceException("该退款不存在.");
 		}
-		
+
 		//查询退款成功记录
 		int success = 0;
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
@@ -83,12 +84,12 @@ public class QueryPayStatusSchedule {
 			if(refund.getStatus() == 1) {
 				success = success + 1;
 			}
-			
+
 			if(refund.getStatus() == 0) {
 				return ;
 			}
 		}
-		
+
 		//验证退款成功笔数
 		if(success == 0 ) {
 			preRefund.setStatus(2);
@@ -97,21 +98,21 @@ public class QueryPayStatusSchedule {
 		}else {
 			preRefund.setStatus(3);
 		}
-		preRefund.setTradeDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+		preRefund.setTradeDate(AggPayTradeDate.buildTradeDate());
 		preRefund.insertOrUpdate();
-		
+
 		// 回调工单
 		WorkOrderCallBack result = new WorkOrderCallBack(preRefund);
 		refundHandler.refundNotifyHandler(result);
 	}
-	
-	
+
+
 	private ZTKXCAS008ResponseBean getBankResult(String refundNo) {
 		CommonResult2<ZTKXCAS008ResponseBean> bankResult = fastBankPayService.refundStatus(refundNo);
 		log.info(JSONUtil.wrap(bankResult, false).toString());
 		return bankResult.getData();
 	}
-	
+
 	private int getBankStatus(ZTKXCAS008ResponseBean bean) {
 		if(bean != null) {
 			String status = bean.getOriTranStatus();
@@ -120,9 +121,9 @@ public class QueryPayStatusSchedule {
 			}else if(status.equals("41")){
 				return 2;
 			}
-			
+
 		}
 		return 0;
 	}
-		
+
 }

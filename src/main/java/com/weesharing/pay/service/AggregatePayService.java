@@ -15,25 +15,32 @@ import com.weesharing.pay.dto.query.QueryConsumeResult;
 import com.weesharing.pay.dto.query.QueryRefundResult;
 
 public interface AggregatePayService {
-	
+
+	void normalizePreRefund();
+	void normalizeRefund();
+	void normalizeConsume();
+	void normalizePreRefundById(Long id);
+	void normalizeRefundById(Long id);
+	void normalizeConsumeById(Long id);
+
 	public PrePayResult prePay(PrePay prePay);
-	
+
 	public String doPay(AggregatePay pay);
-	
+
 	public List<QueryConsumeResult> doQuery(String orderNo);
-	
+
 	public Integer doPreQuery(String orderNo);
-	
+
 	public Map<String, List<QueryConsumeResult>> doBatchQueryPay(String orderNo);
-	
+
 	public String doRefund(AggregateRefund refund);
-	
+
 	public List<QueryRefundResult> doRefundQuery(String outRefundNo);
-	
+
 	public Map<String, List<QueryRefundResult>> doBatchQueryRefund(String outRefundNos);
-	
+
 	public String fastPayAuth(BankAuthBean auth);
-	
+
 	public CommonPage<QueryConsumeRefundResult> doQueryConsumeRefund(QueryConsumeRefundRequest request);
 
 }

@@ -1,5 +1,6 @@
 package com.weesharing.pay.service.handler;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,24 +20,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class NotifyPayHandler {
-	
+
 	@Autowired
 	private PayHandler payHandler;
-	
+
 	@Autowired
 	private IConsumeService consumeService;
-	
+
 	public void PayNotifyService(CommonPayNotify notifyParam) {
 		Consume consume = getConsume(notifyParam.getOrderNo(), notifyParam.getPayType());
 		log.info("[支付回调][支付号]:{}, [金额]:{}", notifyParam.getOrderNo(),  notifyParam.getPayFee());
 		consume.setStatus(1);
 		consume.setTradeNo(notifyParam.getTradeNo());
-		consume.setTradeDate(notifyParam.getTradeDate());
+		consume.setTradeDate(AggPayTradeDate.buildTradeDate(notifyParam.getTradeDate()));
 		consume.insertOrUpdate();
 		//继续调用同步支付渠道
 		payHandler.syncPay(notifyParam.getOrderNo(), true);
 	}
-	
+
 	private Consume getConsume(String orderNo, String payType) {
 		QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
 		consumeQuery.eq("order_no", orderNo);

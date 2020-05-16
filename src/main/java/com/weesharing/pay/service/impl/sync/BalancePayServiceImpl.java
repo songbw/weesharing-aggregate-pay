@@ -2,6 +2,7 @@ package com.weesharing.pay.service.impl.sync;
 
 import java.util.Date;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.stereotype.Service;
 
 import com.weesharing.pay.common.CommonResult2;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service("balancePayService")
 public class BalancePayServiceImpl implements IPaySyncService{
-	
+
 	/**
 	 * 调用余额账户
 	 */
@@ -38,7 +39,7 @@ public class BalancePayServiceImpl implements IPaySyncService{
 		log.info("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
 			consume.setPayer(commonResult.getData().getTelephone());
-			consume.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+			consume.setTradeDate(AggPayTradeDate.buildTradeDate());
 			consume.setStatus(1);
 			consume.insertOrUpdate();
 		} else if(commonResult.getCode() != 200) {
@@ -46,9 +47,9 @@ public class BalancePayServiceImpl implements IPaySyncService{
 			consume.insertOrUpdate();
 			throw new ServiceException(commonResult.getMsg());
 		}
-		
+
 	}
-	
+
 	/**
 	 * 调用余额账户
 	 */
@@ -58,7 +59,7 @@ public class BalancePayServiceImpl implements IPaySyncService{
 		CommonResult2<BalanceDetail> commonResult = BeanContext.getBean(SSOService.class).refund(trd);
 		log.info("请求余额退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
-			refund.setTradeDate(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+			refund.setTradeDate(AggPayTradeDate.buildTradeDate());
 			refund.setTradeNo(commonResult.getData().getTelephone());
 			refund.setStatus(1);
 			refund.insertOrUpdate();
@@ -68,6 +69,6 @@ public class BalancePayServiceImpl implements IPaySyncService{
 			throw new ServiceException(commonResult.getMsg());
 		}
 	}
-	
-	
+
+
 }

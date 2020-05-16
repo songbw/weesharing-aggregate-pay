@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,21 +33,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class RefundHandler {
-	
+
 	@Autowired
 	private IConsumeService consumeService;
-	
+
 	@Autowired
 	private IRefundService refundService;
-	
+
 	@Autowired
 	private IPreConsumeService preConsumeService;
-	
+
 	@Autowired
 	private IPreRefundService preRefundService;
-	
+
 	private ExecutorService executor = Executors.newCachedThreadPool() ;
-	
+
 	public String doRefund(AggregateRefund refund) {
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", refund.getOrderNo());
@@ -54,21 +55,21 @@ public class RefundHandler {
 		if(preConsume == null ) {
 			throw new ServiceException("该退款没有此支付订单交易,请核实后重试.");
 		}
-		
+
 		QueryWrapper<PreRefund> preRefundQuery = new QueryWrapper<PreRefund>();
 		preRefundQuery.eq("out_refund_no", refund.getOutRefundNo());
 		preRefundQuery.eq("order_no", refund.getOrderNo());
-		
+
 		PreRefund preRefund = preRefundService.getOne(preRefundQuery);
 		if(preRefund != null ) {
 			throw new ServiceException("该退款已存在, 如果未退款成功,请更换退款单号重试.");
 		}
-		
+
 		preRefund = refund.convert();
 		preRefund.setSourceOutTradeNo(preConsume.getOutTradeNo());
 		preRefund.setTotalFee(refund.getRefundFee());
 		preRefund.insert();
-		
+
 		//判断退款金额
 		if(checkRefundFee(preConsume, refund)) {
 			//金额正确进行异步退款
@@ -76,10 +77,10 @@ public class RefundHandler {
 		}else {
 			throw new ServiceException("退款失败, 请核对退款金额");
 		}
-		
+
 		return preRefund.getOutRefundNo();
 	}
-	
+
 	/**
 	 * 判断退款金额是否大于支付金额
 	 * @param preConsume
@@ -94,7 +95,7 @@ public class RefundHandler {
 		if(Integer.parseInt(preConsume.getActPayFee()) == Integer.parseInt(refund.getRefundFee())){
 			return true;
 		}
-		
+
 		int unRefund =  0;
 		QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 		refundQuery.eq("order_no", refund.getOrderNo());
@@ -107,10 +108,10 @@ public class RefundHandler {
 		if(unRefund >= Integer.parseInt(refund.getRefundFee())){
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private void asyncRefund(PreRefund preRefund, AggregateRefund refund) {
 		executor.submit(new Runnable(){
 			@Override
@@ -119,7 +120,7 @@ public class RefundHandler {
 			}
 		});
 	}
-	
+
 	/**
 	 * 按退款优先级自动分配金额退款
 	 * @param preRefund
@@ -144,13 +145,13 @@ public class RefundHandler {
 					}else {
 						refundService.doRefund(aggregateRefund.convert(preRefund, refund));
 					}
-					
+
 				} catch (Exception e) {
 					log.info("退款异常:{}", e.getMessage());
 					remainTotal = remainTotal - Long.parseLong(refund.getActPayFee());
 				}
 			}
-			
+
 			//设置退款状态
 			if(isAsync) {
 				preRefund.setStatus(4);
@@ -163,10 +164,10 @@ public class RefundHandler {
 				preRefund.setStatus(1);
 				preRefund.setRefundFee(String.valueOf(refundTotal));
 			}
-			preRefund.setTradeDate(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			preRefund.setTradeDate(AggPayTradeDate.buildTradeDate());
 			preRefund.insertOrUpdate();
 		}
-		
+
 		//存在异步退款等待消息
 		//不存在回调工单
 		if(isAsync) {
@@ -176,19 +177,18 @@ public class RefundHandler {
 			refundNotifyHandler(result);
 		}
 	}
-	
+
 	/**
 	 * 退款自动随机分配金额处理器
 	 * @param preRefund
 	 * @param refund
 	 * @param refundTotal
-	 * @param payType
-	 * @return
+	 * @return List
 	 */
 	private List<Consume> autoAllocationRefundHandler(PreRefund preRefund, AggregateRefund refund, Long refundTotal) {
-		
+
 		List<Consume> refunds = new ArrayList<Consume>();
-		
+
 		for(PayType refundType : PayType.values()) {
 			if (refundTotal > 0) {
 				QueryWrapper<Consume> consumeQuery = new QueryWrapper<Consume>();
@@ -197,20 +197,20 @@ public class RefundHandler {
 				consumeQuery.eq("status", 1);
 				List<Consume> consumes = consumeService.list(consumeQuery);
 				Long payTotal = consumes.stream().mapToLong(pay -> Long.parseLong(pay.getActPayFee())).sum();
-				
+
 				QueryWrapper<Refund> refundQuery = new QueryWrapper<Refund>();
 				refundQuery.eq("pay_type", refundType.getName());
 				refundQuery.eq("order_no", refund.getOrderNo());
 				refundQuery.eq("status", 1);
 				List<Refund> refundeds = refundService.list(refundQuery);
 				Long processTotal = refundeds.stream().mapToLong(refunded -> Long.parseLong(refunded.getRefundFee())).sum();
-				
+
 				//剩余已支付的款
 				Long remainTotal = payTotal - processTotal;
 				if(consumes != null && consumes.size() > 0 && refundTotal > 0 && remainTotal > 0) {
-					
+
 					log.info("[退款]{}总剩余退款金额: {}", refundType, remainTotal);
-					
+
 					for(Consume consume : consumes) {
 						//核算某种支付方式的剩余款项
 						Long remain = Long.parseLong(consume.getActPayFee()) ;
@@ -219,10 +219,10 @@ public class RefundHandler {
 								remain = remain - Long.parseLong(refunded.getRefundFee());
 							}
 						}
-						
+
 						if (refundTotal > 0 && remain > 0) {
 							log.info("[退款] *** 开始回退支付的金额 *** ");
-							
+
 							if(refundTotal >= remain) {
 								consume.setActPayFee(String.valueOf(remain));
 								log.info("[退款] 退款: {}", remain);
@@ -232,7 +232,7 @@ public class RefundHandler {
 								log.info("[退款] 退款: {}", refundTotal);
 								refundTotal = 0L;
 							}
-							
+
 							refunds.add(consume);
 						}
 					}
@@ -241,14 +241,14 @@ public class RefundHandler {
 		}
 		return refunds;
 	}
-	
+
 	private boolean checkRefundType(String payType) {
 		 if(PayType.valueOf(payType.toUpperCase()).getRefund().equals("async")) {
 			 return true;
 		 }
 		 return false;
 	}
-	
+
 
 	/**
 	 * 退款回调函数
