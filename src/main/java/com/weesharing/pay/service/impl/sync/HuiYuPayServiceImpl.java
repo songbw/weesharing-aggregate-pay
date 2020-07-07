@@ -3,6 +3,7 @@ package com.weesharing.pay.service.impl.sync;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.weesharing.pay.common.CommonResult2;
+import com.weesharing.pay.config.AggPayConfig;
 import com.weesharing.pay.entity.Consume;
 import com.weesharing.pay.entity.Refund;
 import com.weesharing.pay.exception.ServiceException;
@@ -15,6 +16,7 @@ import com.weesharing.pay.feign.result.HuiYuRefundResult;
 import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.utils.AggPayTradeDate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -23,8 +25,12 @@ import java.util.Date;
 @Service(value="huiYuPayService")
 public class HuiYuPayServiceImpl implements IPaySyncService {
 
+    @Autowired
+    private AggPayConfig aggPayConfig;
+
     @Override
     public void doPay(Consume consume) {
+        consume.setPayee(aggPayConfig.getHuiyuReceiveAccount());
         HuiYuConsumeData consumeData = new HuiYuConsumeData(consume);
         CommonResult2<HuiYuPayResult> commonResult = null;
         try {

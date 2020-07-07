@@ -1,5 +1,5 @@
 server:
-  port: 8016  
+  port: 8016
 spring:
   profiles:
     active: dev
@@ -34,4 +34,10 @@ feign:
       default:
         #connectTimeout: 3000
         #readTimeout: 5000
-        loggerLevel: full      
+        loggerLevel: full
+
+aggpay:
+  icloudcity: MCH508327
+  icloudcityNotifyUrl: https://test-api.weesharing.com/v2/pingans/wkyc/payment/back
+  icloudcityRefundNotifyUrl: https://test-api.weesharing.com/v2/pingans/wkyc/refund/back
+  huiyuReceiveAccount: FENGCHAOHUIYU20200529180101

@@ -8,7 +8,7 @@ import lombok.Setter;
 
 /**
  * 读取项目相关配置
- * 
+ *
  * @author zp
  */
 @Getter
@@ -19,11 +19,13 @@ public class AggPayConfig
 {
     /** 云城APP MerchantNo */
     private String icloudcity;
-    
+
     /** 云城APP NotifyUrl */
     private String icloudcityNotifyUrl;
-    
+
     /** 云城APP Refund NotifyUrl */
     private String icloudcityRefundNotifyUrl;
+
+    private String huiyuReceiveAccount;
 
 }
