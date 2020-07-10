@@ -209,6 +209,11 @@ public class PayHandler {
 				consumeService.persistConsume(pay.getFcAlipayPay().convert());
 				checkPayType(preConsume.getOrderNo(), pay.getFcAlipayPay().getPayType());
 			}
+			if(pay.getFcAliPayJsSdkPay() != null) {
+				preActPayFee  = computePrePayFee(preActPayFee, pay.getFcAliPayJsSdkPay().getActPayFee());
+				consumeService.persistConsume(pay.getFcAliPayJsSdkPay().convert());
+				checkPayType(preConsume.getOrderNo(), pay.getFcAliPayJsSdkPay().getPayType());
+			}
 			if(pay.getFcWxPay() != null) {
 				preActPayFee  = computePrePayFee(preActPayFee, pay.getFcWxPay().getActPayFee());
 				consumeService.persistConsume(pay.getFcWxPay().convert());

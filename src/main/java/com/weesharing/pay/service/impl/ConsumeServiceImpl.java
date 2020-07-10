@@ -4,6 +4,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import com.weesharing.pay.service.impl.async.*;
 import com.weesharing.pay.service.impl.sync.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,6 @@ import com.weesharing.pay.service.IConsumeService;
 import com.weesharing.pay.service.IPayAsyncService;
 import com.weesharing.pay.service.IPaySyncService;
 import com.weesharing.pay.service.IPreConsumeService;
-import com.weesharing.pay.service.impl.async.FcAliPayServiceImpl;
-import com.weesharing.pay.service.impl.async.FcWxH5PayServiceImpl;
-import com.weesharing.pay.service.impl.async.FcWxPayServiceImpl;
-import com.weesharing.pay.service.impl.async.FcWxXcxPayServiceImpl;
-import com.weesharing.pay.service.impl.async.PingAnPayServiceImpl;
-import com.weesharing.pay.service.impl.async.YunChengPayServiceImpl;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +82,9 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 
 		if(consume.getPayType().equals(PayType.FCALIPAY.getName())){
 			wsPayAsyncService = new FcAliPayServiceImpl();
+		}
+		if(consume.getPayType().equals(PayType.FCALIJSSDK.getName())){
+			wsPayAsyncService = new FcAliPayJsSdkPayServiceImpl();
 		}
 		if(consume.getPayType().equals(PayType.YUNCHENG.getName())){
 			wsPayAsyncService = new YunChengPayServiceImpl();

@@ -38,24 +38,25 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 	 */
 	@Override
 	public void doRefund(Refund refund) {
-		
+
 		IPaySyncService wsPayService = null;
 		//记录退款记录
 		refund.insert();
-		
-		if(refund.getPayType().equals(PayType.BALANCE.getName())){  
+
+		if(refund.getPayType().equals(PayType.BALANCE.getName())){
 			wsPayService = new BalancePayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.CARD.getName())){  
+		if(refund.getPayType().equals(PayType.CARD.getName())){
 			wsPayService = new WOCPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.WOA.getName())){  
+		if(refund.getPayType().equals(PayType.WOA.getName())){
 			wsPayService = new WOAPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.PINGAN.getName())){  
+		if(refund.getPayType().equals(PayType.PINGAN.getName())){
 			wsPayService = new PingAnPaySyncServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.FCALIPAY.getName())){  
+		if(refund.getPayType().equals(PayType.FCALIPAY.getName()) ||
+				refund.getPayType().equals(PayType.FCALIJSSDK.getName())){
 			wsPayService = new FcAliPaySyncServiceImpl();
 		}
 		if(refund.getPayType().equals(PayType.HUIYU.getName())){
@@ -66,7 +67,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		}else {
 			throw new ServiceException("[同步退款]: 不支持此退款方式");
 		}
-		
+
 	}
 
 	/**
@@ -74,27 +75,27 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 	 */
 	@Override
 	public String doAsyncRefund(Refund refund) {
-		
+
 		IPayAsyncService wsPayAsynService = null;
 		//记录退款记录
 		refund.insert();
-		
-		if(refund.getPayType().equals(PayType.FCWX.getName())){  
+
+		if(refund.getPayType().equals(PayType.FCWX.getName())){
 			wsPayAsynService = new FcWxPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.FCWXH5.getName())){  
+		if(refund.getPayType().equals(PayType.FCWXH5.getName())){
 			wsPayAsynService = new FcWxH5PayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.FCWXXCX.getName())){  
+		if(refund.getPayType().equals(PayType.FCWXXCX.getName())){
 			wsPayAsynService = new FcWxXcxPayServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.BANK.getName())){  
+		if(refund.getPayType().equals(PayType.BANK.getName())){
 			wsPayAsynService = new BankPayAsyncServiceImpl();
 		}
-		if(refund.getPayType().equals(PayType.YUNCHENG.getName())){  
+		if(refund.getPayType().equals(PayType.YUNCHENG.getName())){
 			wsPayAsynService = new YunChengPayServiceImpl();
 		}
-		
+
 		if(wsPayAsynService != null) {
 			return wsPayAsynService.doRefund(refund);
 		}else {

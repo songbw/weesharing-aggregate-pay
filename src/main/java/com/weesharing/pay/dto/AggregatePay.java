@@ -35,6 +35,9 @@ public class AggregatePay {
 	//凤巢支付宝
 	private FcAlipayPay fcAlipayPay;
 
+	//凤巢支付宝JSSDK支付
+	private FcAliPayJsSdkPay fcAliPayJsSdkPay;
+
 	//凤巢微信公众号
 	private FcWxPay fcWxPay;
 

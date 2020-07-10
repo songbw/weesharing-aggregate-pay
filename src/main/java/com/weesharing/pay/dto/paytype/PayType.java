@@ -18,6 +18,7 @@ public enum PayType {
 	FCWXXCX ("fcwxxcx",  "凤巢微信小程序支付",   "async", "async" ),
 	YUNCHENG("yuncheng", "云城支付",             "async", "async" ),
 	HUIYU("huiyu", "惠余支付",             "sync", "sync" ),
+	FCALIJSSDK("fcalijssdk", "凤巢支付宝jsSdk支付",     "async", "sync" ),
 	;
 
 	private String name;
