@@ -4,6 +4,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import cn.hutool.json.JSONUtil;
 import com.weesharing.pay.service.impl.async.*;
 import com.weesharing.pay.service.impl.sync.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 	 */
 	@Override
 	public void doPay(Consume consume) {
-
+		log.info("[同步支付]  参数:{}", JSONUtil.toJsonStr(consume));
 		IPaySyncService wsPayService = null;
 
 		if(consume.getPayType().equals(PayType.BALANCE.getName())){
@@ -77,7 +78,7 @@ public class ConsumeServiceImpl extends ServiceImpl<ConsumeMapper, Consume> impl
 
 	@Override
 	public String doAsynPay(Consume consume) {
-
+		log.info("[异步支付]  参数:{}", JSONUtil.toJsonStr(consume));
 		IPayAsyncService wsPayAsyncService = null;
 
 		if(consume.getPayType().equals(PayType.FCALIPAY.getName())){

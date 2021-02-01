@@ -2,6 +2,7 @@ package com.weesharing.pay.service.handler;
 
 import java.util.List;
 
+import cn.hutool.json.JSONUtil;
 import com.weesharing.pay.utils.AggPayTradeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class NotifyRefundHandler {
 	private RefundHandler refundHandler;
 
 	public void RefundNotifyService(CommonRefundNotify refundNotify) {
-
+		log.info("[退款回调] 入参:{}", JSONUtil.toJsonStr(refundNotify));
 		//更新异步退款状态
 		Refund refund = refundService.getOne(getRefund(refundNotify));
 		if (refund == null) {
@@ -60,6 +61,7 @@ public class NotifyRefundHandler {
 	 * @param refundNotify
 	 */
 	private void notifyWorkOrder(CommonRefundNotify refundNotify) {
+		log.info("更新退款状态并回调工单系统  入参: {}",JSONUtil.toJsonStr(refundNotify));
 		//查询预退款请求
 		QueryWrapper<PreRefund> preRefundQuery = new QueryWrapper<PreRefund>();
 		preRefundQuery.eq("order_no", refundNotify.getOrderNo());

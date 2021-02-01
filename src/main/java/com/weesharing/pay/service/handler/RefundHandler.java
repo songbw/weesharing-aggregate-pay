@@ -252,14 +252,13 @@ public class RefundHandler {
 
 	/**
 	 * 退款回调函数
-	 * @param notifyUrl
-	 * @param json
+	 * @param result 结果
 	 */
 	public void refundNotifyHandler(WorkOrderCallBack result) {
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
-				log.info("退款回调, 参数: {}", JSONUtil.wrap(result, false).toString());
+				log.info("退款回调 workorders//aggpays/notify, 参数: {}", JSONUtil.wrap(result, false).toString());
 				BeanContext.getBean(WorkOrderService.class).refundNotify(result);
 			}
 		});

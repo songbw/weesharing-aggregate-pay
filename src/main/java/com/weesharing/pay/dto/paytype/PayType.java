@@ -33,6 +33,25 @@ public enum PayType {
 		this.refund = refund;
 	}
 
+	public static String
+	getRightName(String inputPayType){
+		if(null == inputPayType){
+			return null;
+		}
+		for(PayType p: PayType.values()){
+			if(p.getName().equals(inputPayType)){
+				return p.getName();
+			}
+		}
+		for(PayType p: PayType.values()){
+			if(inputPayType.contains(p.getName())){
+				return p.getName();
+			}
+		}
+
+		return null;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -48,4 +67,5 @@ public enum PayType {
 	public String getDesc() {
 		return desc;
 	}
+
 }

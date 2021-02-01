@@ -30,7 +30,8 @@ public class PingAnPaySyncServiceImpl implements IPaySyncService {
 
 	@Override
 	public void doRefund(Refund refund) {
-		PingAnRefundData  trd = new PingAnRefundData(refund);
+		log.info("请求平安退款参数: {}",JSONUtil.toJsonStr(refund));
+				PingAnRefundData  trd = new PingAnRefundData(refund);
 		CommonResult2<PingAnResult> commonResult = BeanContext.getBean(PingAnService.class).refund(trd);
 		log.info("请求平安退款参数: {}, 结果: {}", JSONUtil.wrap(trd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {

@@ -110,6 +110,7 @@ public class PayHandler {
 	 * @param zeroPay
 	 */
 	public void syncPay(String orderNo, Boolean zeroPay) {
+		log.info("聚合同步支付 orderNo={} zeroPay={}",orderNo,(zeroPay)?"true":"false");
 		executor.submit(new Runnable(){
 			@Override
 			public void run() {
@@ -153,7 +154,8 @@ public class PayHandler {
 	 */
 	public void payNotifyHandler(OrderCallBack bean) {
 		log.info("支付成功, 准备回调...");
-		log.info("回调地址:{}, 参数: {}", "Feign回调", JSONUtil.wrap(bean, false));
+		log.info("回调地址:{}, 参数: {}", "Feign: sso/payment/pingan/back",
+				JSONUtil.wrap(bean, false));
 
 		executor.submit(new Runnable(){
 			@Override

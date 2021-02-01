@@ -1,6 +1,5 @@
 package com.weesharing.pay.service.impl.sync;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.weesharing.pay.common.CommonResult2;
 import com.weesharing.pay.config.AggPayConfig;
@@ -30,13 +29,14 @@ public class HuiYuPayServiceImpl implements IPaySyncService {
 
     @Override
     public void doPay(Consume consume) {
+        log.info("请求惠余支付 入参:{}",JSONUtil.toJsonStr(consume));
         consume.setPayee(aggPayConfig.getHuiyuReceiveAccount());
         HuiYuConsumeData consumeData = new HuiYuConsumeData(consume);
         CommonResult2<HuiYuPayResult> commonResult = null;
         try {
             commonResult = BeanContext.getBean(HuiYuPayService.class).payment(consumeData);
         }catch(Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
         log.info("请求惠余支付参数:{}, 结果: {}", JSONUtil.wrap(consumeData, false), JSONUtil.wrap(commonResult, false));
         ///不记录用户支付密码

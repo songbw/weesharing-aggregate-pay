@@ -34,7 +34,7 @@ public class BalancePayServiceImpl implements IPaySyncService{
 		try {
 			commonResult = BeanContext.getBean(SSOService.class).consume(tcd);
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 		log.info("请求余额支付参数:{}, 结果: {}", JSONUtil.wrap(tcd, false), JSONUtil.wrap(commonResult, false));
 		if (commonResult.getCode() == 200) {
