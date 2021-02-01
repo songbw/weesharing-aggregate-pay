@@ -58,13 +58,21 @@ public class PayHandler {
 	 *     3: 失败(超时)  超时情况默认失败 ==> 发起退款流程
 	 */
 	public String doPay(AggregatePay pay) {
+		/**
 		String pay_process = redisService.get("pay_process:" + pay.getOrderNo());
 		if(StringUtils.isNotEmpty(pay_process)) {
 			throw new ServiceException("该支付交易正在处理中, 请稍等.");
 		}
+		 //设置支付订单为处理中的状态
+		 redisService.set("pay_process:" + pay.getOrderNo(), pay.getOrderNo(), 30);
+		 */
+		String lockKey = "pay_process:" + pay.getOrderNo();
+		String lockTimeStamp = String.valueOf(System.currentTimeMillis());
+		if (!redisService.lock(lockKey,lockTimeStamp,30L)){
+			throw new ServiceException("该支付交易正在处理中, 请稍等.");
+		}
 		PreConsume preConsume = getPreConsume(pay.getOrderNo());
-		//设置支付订单为处理中的状态
-		redisService.set("pay_process:" + pay.getOrderNo(), pay.getOrderNo(), 30);
+
 		//判断总金额支付正确
 		int checkResult = checkPayFee(preConsume, pay);
 		if(checkResult == 1) {
@@ -79,7 +87,8 @@ public class PayHandler {
 			//金额正确进行0元异步支付
 			syncPay(pay.getOrderNo(), false);
 		}else {
-			redisService.remove("pay_process:" + pay.getOrderNo());
+			///redisService.remove("pay_process:" + pay.getOrderNo());
+			redisService.unLock(lockKey,lockTimeStamp);
 			throw new ServiceException("支付失败, 请核对支付金额");
 		}
 		return null;

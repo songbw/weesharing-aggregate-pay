@@ -10,7 +10,7 @@ public interface RedisService {
      * 存储数据
      */
     void set(String key, String value);
-    
+
     void set(String key, String value, long expire);
 
     /**
@@ -41,5 +41,19 @@ public interface RedisService {
      * @return
      */
 	Long decrement(String key, long delta);
-	
+
+	/**
+     * 加锁
+     * @param lockKey key: "pay_process:" + pay.getOrderNo()
+     * @param timeStamp 加锁时间戳(System.currentTimeMillis()值)
+     * @param seconds 自动解锁时间(秒)
+     * */
+	boolean lock(String lockKey,String timeStamp,long seconds);
+
+    /**
+     * 解锁
+     * @param lockKey key: "pay_process:" + pay.getOrderNo()
+     * @param timeStamp 加锁时的时间戳
+     * */
+	void unLock(String lockKey,String timeStamp);
 }
