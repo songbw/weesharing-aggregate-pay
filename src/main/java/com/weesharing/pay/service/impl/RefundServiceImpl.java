@@ -1,5 +1,7 @@
 package com.weesharing.pay.service.impl;
 
+import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,6 +32,7 @@ import com.weesharing.pay.service.impl.sync.HuiYuPayServiceImpl;
  * @author ZhangPeng
  * @since 2019-09-18
  */
+@Slf4j
 @Service
 public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> implements IRefundService {
 
@@ -38,7 +41,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 	 */
 	@Override
 	public void doRefund(Refund refund) {
-
+		log.info("同步退款处理 参数： {}", JSONUtil.toJsonStr(refund));
 		IPaySyncService wsPayService = null;
 		//记录退款记录
 		refund.insert();
@@ -79,7 +82,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 		IPayAsyncService wsPayAsynService = null;
 		//记录退款记录
 		refund.insert();
-
+		log.info("异步退款处理 新建refund： {}",JSONUtil.toJsonStr(refund));
 		if(refund.getPayType().equals(PayType.FCWX.getName())){
 			wsPayAsynService = new FcWxPayServiceImpl();
 		}

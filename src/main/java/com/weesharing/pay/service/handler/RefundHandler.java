@@ -49,13 +49,14 @@ public class RefundHandler {
 	private ExecutorService executor = Executors.newCachedThreadPool() ;
 
 	public String doRefund(AggregateRefund refund) {
+		log.info("退款处理 入参： {}",JSONUtil.toJsonStr(refund));
 		QueryWrapper<PreConsume> preConsumeQuery = new QueryWrapper<PreConsume>();
 		preConsumeQuery.eq("order_no", refund.getOrderNo());
 		PreConsume preConsume = preConsumeService.getOne(preConsumeQuery);
 		if(preConsume == null ) {
 			throw new ServiceException("该退款没有此支付订单交易,请核实后重试.");
 		}
-
+		log.info("退款处理 找到preConsume： {}",JSONUtil.toJsonStr(preConsume));
 		QueryWrapper<PreRefund> preRefundQuery = new QueryWrapper<PreRefund>();
 		preRefundQuery.eq("out_refund_no", refund.getOutRefundNo());
 		preRefundQuery.eq("order_no", refund.getOrderNo());
@@ -68,11 +69,14 @@ public class RefundHandler {
 		preRefund = refund.convert();
 		preRefund.setSourceOutTradeNo(preConsume.getOutTradeNo());
 		preRefund.setTotalFee(refund.getRefundFee());
+		preRefund.setAppId(preConsume.getAppId());
 		preRefund.insert();
-
+		log.info("退款处理 创建PreRefund： {}",JSONUtil.toJsonStr(preRefund));
+		refund.setAppId(preConsume.getAppId());
 		//判断退款金额
 		if(checkRefundFee(preConsume, refund)) {
 			//金额正确进行异步退款
+			log.info("退款处理 检查金额 通过");
 			asyncRefund(preRefund, refund);
 		}else {
 			throw new ServiceException("退款失败, 请核对退款金额");
@@ -123,15 +127,15 @@ public class RefundHandler {
 
 	/**
 	 * 按退款优先级自动分配金额退款
-	 * @param preRefund
-	 * @param refund
-	 * @param refundTotal
-	 * @return
+	 * @param preRefund preRefund
+	 * @param aggregateRefund refundBo
+	 * @return void
 	 */
 	private void autoAllocationRefund(PreRefund preRefund, AggregateRefund aggregateRefund) {
 		//1: 成功, 2: 失败, 3: 部分失败, 0: 新创建, 4: 退款中
 		Long refundTotal = Long.parseLong(aggregateRefund.getRefundFee());
-		log.info("总退款金额: {}", refundTotal);
+		log.info("退款处理 退款预处理:{}  退款请求参数:{}  总退款金额: {}",
+				JSONUtil.toJsonStr(preRefund),JSONUtil.toJsonStr(aggregateRefund),refundTotal);
 		Long remainTotal = 0L;
 		boolean isAsync = false;
 		if (refundTotal > 0) {
@@ -166,6 +170,7 @@ public class RefundHandler {
 			}
 			preRefund.setTradeDate(AggPayTradeDate.buildTradeDate());
 			preRefund.insertOrUpdate();
+			log.info("退款处理 更新preRefund： {}",JSONUtil.toJsonStr(preRefund));
 		}
 
 		//存在异步退款等待消息
